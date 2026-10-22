@@ -52,13 +52,15 @@
         <h2>Upptäck Atlaz Vänner</h2>
 
         <div class="card-grid">
-            @foreach (var page in featuredPages)
+
+            @foreach (var featuredPage in featuredPages)
             {
-                <a class="feature-card" href="@page.Url()">
-                    <h3>@page.Name</h3>
+                <a class="feature-card" href="@featuredPage.Url()">
+                    <h3>@featuredPage.Name</h3>
                     <span>Läs mer →</span>
                 </a>
             }
+
         </div>
 
     </div>

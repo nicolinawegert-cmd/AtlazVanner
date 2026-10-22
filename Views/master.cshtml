@@ -31,14 +31,15 @@
 
             <nav aria-label="Huvudmeny">
                 <ul class="nav-list">
-                    @foreach (var page in menuPages)
+                    @foreach (var menuPage in menuPages)
                     {
                         <li>
-                            <a href="@page.Url()">
-                                @page.Name
+                            <a href="@menuPage.Url()">
+                                @menuPage.Name
                             </a>
                         </li>
                     }
+
                 </ul>
             </nav>
 
