@@ -1,0 +1,59 @@
+﻿
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>
+@using Umbraco.Extensions
+
+@{
+    Layout = null;
+
+    var root = Model.Root();
+    var menuPages = root.Children;
+}
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>@Model.Name | Atlaz Vänner</title>
+
+    <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-inner">
+
+            <a class="logo" href="@root.Url()">
+                🐾 Atlaz Vänner
+            </a>
+
+            <nav aria-label="Huvudmeny">
+                <ul class="nav-list">
+                    @foreach (var page in menuPages)
+                    {
+                        <li>
+                            <a href="@page.Url()">
+                                @page.Name
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+
+        </div>
+    </header>
+
+    <main id="main-content">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>© @DateTime.Now.Year Atlaz Vänner</p>
+        </div>
+    </footer>
+
+</body>
+</html>

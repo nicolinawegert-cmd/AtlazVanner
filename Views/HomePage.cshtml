@@ -1,6 +1,72 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.HomePage>
-@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+﻿
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Extensions
+
 @{
-	Layout = null;
+    Layout = "master.cshtml";
+
+    var heroTitle = Model.Value<string>("heroTitle");
+    var heroText = Model.Value<string>("heroText");
+    var heroImage = Model.Value<MediaWithCrops>("heroImage");
+    var heroImageAlt = Model.Value<string>("heroImageAlt");
+    var buttonText = Model.Value<string>("heroButtonText");
+
+    var introTitle = Model.Value<string>("introTitle");
+    var introText = Model.Value<string>("introText");
+
+    var featuredPages = Model.Children.Take(3);
 }
+
+<section class="hero">
+    <div class="container hero-inner">
+
+        <div class="hero-content">
+            <span class="eyebrow">ATLAZ VÄNNER</span>
+
+            <h1>@heroTitle</h1>
+
+            <p>@heroText</p>
+
+            <a class="btn-primary" href="#upptack">
+                @(string.IsNullOrWhiteSpace(buttonText)
+                    ? "Upptäck mer"
+                    : buttonText)
+            </a>
+        </div>
+
+        @if (heroImage != null)
+        {
+            <div class="hero-image">
+                <img src="@heroImage.MediaUrl()"
+                     alt="@heroImageAlt" />
+            </div>
+        }
+
+    </div>
+</section>
+
+<section class="discover" id="upptack">
+    <div class="container">
+
+        <h2>Upptäck Atlaz Vänner</h2>
+
+        <div class="card-grid">
+            @foreach (var page in featuredPages)
+            {
+                <a class="feature-card" href="@page.Url()">
+                    <h3>@page.Name</h3>
+                    <span>Läs mer →</span>
+                </a>
+            }
+        </div>
+
+    </div>
+</section>
+
+<section class="introduction">
+    <div class="container">
+        <h2>@introTitle</h2>
+        <p>@introText</p>
+    </div>
+</section>
