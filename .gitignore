@@ -486,5 +486,5 @@ umbraco-package-schema.json
 # Log files
 /umbraco/Logs/
 
-# Media files
-/wwwroot/media/
+# Skapas av npm run bygg eller npm run sass
+/wwwroot/css/

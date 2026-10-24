@@ -1,0 +1,25 @@
+{
+  "name": "atlazvanner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "sass": "sass --watch Assets/scss/main.scss:wwwroot/css/main.css",
+    "bygg": "sass --style=compressed --no-source-map Assets/scss/main.scss wwwroot/css/main.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicolinawegert-cmd/AtlazVanner.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nicolinawegert-cmd/AtlazVanner/issues"
+  },
+  "homepage": "https://github.com/nicolinawegert-cmd/AtlazVanner#readme",
+  "devDependencies": {
+    "sass": "^1.106.1"
+  }
+}
