@@ -1,3 +1,5 @@
+@use "header";
+
 $primary: #456a50;
 $dark: #304b34;
 $background: #f7f3e9;
@@ -22,46 +24,6 @@ body {
 .container {
   width: min(90%, 1200px);
   margin: 0 auto;
-}
-
-// HEADER
-
-.site-header {
-  background: $light;
-  padding: 20px 0;
-}
-
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.logo {
-  color: $dark;
-  font-size: 24px;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.nav-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  a {
-    color: $dark;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }
 
 // HERO

@@ -485,6 +485,3 @@ umbraco-package-schema.json
 
 # Log files
 /umbraco/Logs/
-
-# Skapas av npm run bygg eller npm run sass
-/wwwroot/css/

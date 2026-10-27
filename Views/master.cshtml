@@ -1,5 +1,4 @@
-﻿
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>
 @using Umbraco.Extensions
 
 @{
@@ -19,6 +18,8 @@
     <title>@Model.Name | Atlaz Vänner</title>
 
     <link rel="stylesheet" href="/css/main.css" />
+
+    <script src="/js/navigation.js" defer></script>
 </head>
 <body>
 
@@ -26,15 +27,23 @@
         <div class="container header-inner">
 
             <a class="logo" href="@root.Url()">
-                🐾 Atlaz Vänner
+                <span class="logo-icon" aria-hidden="true">
+                    🐾
+                </span>
+                <span>Atlaz Vänner</span>
             </a>
 
-            <nav aria-label="Huvudmeny">
+            <button class="nav-toggle" type="button" aria-label="Öppna meny" aria-expanded="false"
+                    aria-controls="main-navigation">
+                <span class="nav-toggle-icon" aria-hidden="true">☰</span>
+            </button>
+
+            <nav class="site-nav" id="main-navigation" aria-label="Huvudmeny">
                 <ul class="nav-list">
                     @foreach (var menuPage in menuPages)
                     {
                         <li>
-                            <a href="@menuPage.Url()">
+                            <a href="@menuPage.Url()" aria-current="@(Model.Id == menuPage.Id ? "page" : null)">
                                 @menuPage.Name
                             </a>
                         </li>
