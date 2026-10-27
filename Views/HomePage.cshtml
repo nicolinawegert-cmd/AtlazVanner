@@ -1,6 +1,7 @@
 ﻿
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 @using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Web.Common.PublishedModels
 @using Umbraco.Extensions
 
 @{
@@ -15,7 +16,10 @@
     var introTitle = Model.Value<string>("introTitle");
     var introText = Model.Value<string>("introText");
 
-    var featuredPages = Model.Children.Take(3);
+    var featuredPages = 
+        Model.Value<IEnumerable<IPublishedContent>>("featuredPages")
+        ?? Enumerable.Empty<IPublishedContent>();
+    
 }
 
 <section class="hero">
@@ -46,18 +50,57 @@
     </div>
 </section>
 
+
 <section class="discover" id="upptack">
     <div class="container">
 
         <h2>Upptäck Atlaz Vänner</h2>
 
-        <div class="card-grid">
+        <div class="discover__grid">
 
-            @foreach (var featuredPage in featuredPages)
+            @foreach (var item in featuredPages.Take(3))
             {
-                <a class="feature-card" href="@featuredPage.Url()">
-                    <h3>@featuredPage.Name</h3>
-                    <span>Läs mer →</span>
+                var image = item.GetProperty("cardImage") != null
+                    ? item.Value<MediaWithCrops>("cardImage")
+                    : null;
+
+                var description = item.GetProperty("cardDescription") != null
+                    ? item.Value<string>("cardDescription")
+                    : null;
+
+                <a href="@(item.Url())" class="discover__card">
+
+                    <div class="discover__image-wrapper">
+                        @if (image != null)
+                        {
+                            <img
+                                src="@image.MediaUrl()"
+                                alt=""
+                                class="discover__image"
+                                loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="discover__placeholder"
+                                 aria-hidden="true">
+                                🐾
+                            </div>
+                        }
+                    </div>
+
+                    <div class="discover__content">
+                        <h3>@item.Name</h3>
+
+                        @if (!string.IsNullOrWhiteSpace(description))
+                        {
+                            <p>@description</p>
+                        }
+
+                        <span class="discover__link">
+                            Upptäck mer →
+                        </span>
+                    </div>
+
                 </a>
             }
 
