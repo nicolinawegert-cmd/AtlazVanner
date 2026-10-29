@@ -1,0 +1,55 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Extensions
+
+@{
+    Layout = "master.cshtml";
+
+    var introText = Model.Value<string>("introText");
+    var galleryItems = Model.Children
+        .Where(item => item.ContentType.Alias == "galleryItem");
+}
+
+<section class="gallery">
+    <div class="container">
+        <h1>@Model.Name</h1>
+
+        @if (!string.IsNullOrWhiteSpace(introText))
+        {
+            <p class="gallery-intro">@introText</p>
+        }
+
+        <ul class="gallery-grid">
+            @foreach (var item in galleryItems)
+            {
+                var image = item.Value<MediaWithCrops>("image");
+
+                if (image == null)
+                {
+                    continue;
+                }
+
+                var altText = item.Value<string>("altText");
+                var caption = item.Value<string>("caption");
+
+                <li>
+                    <figure class="gallery-item">
+                        @* Länken visar den stora bilden, även utan JavaScript *@
+                        <a class="gallery-link" href="@image.GetCropUrl(width: 1600)">
+                            <img src="@image.GetCropUrl(width: 400, height: 400, imageCropMode: ImageCropMode.Crop)"
+                                 alt="@altText"
+                                 width="400"
+                                 height="400"
+                                 loading="lazy" />
+                        </a>
+
+                        @if (!string.IsNullOrWhiteSpace(caption))
+                        {
+                            <figcaption>@caption</figcaption>
+                        }
+                    </figure>
+                </li>
+            }
+        </ul>
+    </div>
+</section>
