@@ -1,0 +1,50 @@
+// GALLERI
+
+.gallery {
+  padding: 70px 0;
+}
+
+.gallery-intro {
+  max-width: 60ch;
+  margin-bottom: 30px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gallery-item {
+  margin: 0;
+
+  figcaption {
+    margin-top: 8px;
+    font-size: 0.95rem;
+  }
+}
+
+.gallery-link {
+  display: block;
+  border-radius: 16px;
+  overflow: hidden;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  // Ingen zoom för den som valt mindre rörelse
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+}
