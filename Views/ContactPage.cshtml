@@ -1,0 +1,60 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Extensions
+
+@{
+    Layout = "master.cshtml";
+
+    var introText = Model.Value<string>("introText");
+    var email = Model.Value<string>("email");
+    var phone = Model.Value<string>("phone");
+    var postalAddress = Model.Value<string>("postalAddress");
+    var meetups = Model.Value<string>("meetups");
+
+    // En tel-länk får bara innehålla siffror och plustecken
+    var phoneLink = new string((phone ?? "").Where(c => char.IsDigit(c) || c == '+').ToArray());
+}
+
+<section class="contact">
+    <div class="container">
+        <h1>@Model.Name</h1>
+
+        @if (!string.IsNullOrWhiteSpace(introText))
+        {
+            <p class="contact-intro">@introText</p>
+        }
+
+        <div class="contact-grid">
+            @if (!string.IsNullOrWhiteSpace(email))
+            {
+                <div class="contact-card">
+                    <h2>Mejl</h2>
+                    <p><a href="mailto:@(email)">@email</a></p>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(phone))
+            {
+                <div class="contact-card">
+                    <h2>Telefon</h2>
+                    <p><a href="tel:@(phoneLink)">@phone</a></p>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(postalAddress))
+            {
+                <div class="contact-card">
+                    <h2>Postadress</h2>
+                    <address>@postalAddress</address>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(meetups))
+            {
+                <div class="contact-card">
+                    <h2>Träffa oss</h2>
+                    <p class="contact-lines">@meetups</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
