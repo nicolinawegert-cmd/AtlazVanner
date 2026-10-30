@@ -6,6 +6,16 @@
 
     var root = Model.Root();
     var menuPages = root.Children;
+
+    var metaTitle = Model.Value<string>("metaTitle");
+    var metaDescription = Model.Value<string>("metaDescription");
+
+    // Sidans namn används om Meta Title är tom
+    var pageTitle = !string.IsNullOrWhiteSpace(metaTitle)
+        ? metaTitle
+        : Model.Id == root.Id
+            ? root.Name
+            : $"{Model.Name} | Atlaz Vänner";
 }
 
 <!DOCTYPE html>
@@ -15,7 +25,12 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1" />
 
-    <title>@Model.Name | Atlaz Vänner</title>
+    <title>@pageTitle</title>
+
+    @if (!string.IsNullOrWhiteSpace(metaDescription))
+    {
+        <meta name="description" content="@metaDescription" />
+    }
 
     <link rel="stylesheet" href="/css/main.css" />
 
