@@ -1,0 +1,78 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using System.Globalization
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Extensions
+
+@{
+    Layout = "master.cshtml";
+
+    var swedish = new CultureInfo("sv-SE");
+    var introText = Model.Value<string>("introText");
+
+    // Senaste nyheten först. Saknas datum används datumet då nyheten skapades.
+    var newsItems = Model.Children
+        .Where(item => item.ContentType.Alias == "newsItem")
+        .Select(item => new
+        {
+            Item = item,
+            Date = item.Value<DateTime>("publishDate") is var date && date != default ? date : item.CreateDate
+        })
+        .OrderByDescending(news => news.Date)
+        .ToList();
+}
+
+<section class="news">
+    <div class="container">
+        <h1>@Model.Name</h1>
+
+        @if (!string.IsNullOrWhiteSpace(introText))
+        {
+            <p class="news-intro">@introText</p>
+        }
+
+        @if (newsItems.Count == 0)
+        {
+            <p>Det finns inga nyheter just nu.</p>
+        }
+        else
+        {
+            <ul class="news-list">
+                @foreach (var news in newsItems)
+                {
+                    var image = news.Item.Value<MediaWithCrops>("image");
+                    var altText = news.Item.Value<string>("altText");
+                    var summary = news.Item.Value<string>("summary");
+
+                    <li>
+                        <article class="news-preview">
+                            @if (image != null)
+                            {
+                                <img class="news-preview-image"
+                                     src="@image.GetCropUrl(width: 600, height: 400, imageCropMode: ImageCropMode.Crop)"
+                                     alt="@altText"
+                                     width="600"
+                                     height="400"
+                                     loading="lazy" />
+                            }
+
+                            <div class="news-preview-content">
+                                <time class="news-date" datetime="@news.Date.ToString("yyyy-MM-dd")">
+                                    @news.Date.ToString("d MMMM yyyy", swedish)
+                                </time>
+
+                                <h2><a href="@news.Item.Url()">@news.Item.Name</a></h2>
+
+                                @if (!string.IsNullOrWhiteSpace(summary))
+                                {
+                                    <p>@summary</p>
+                                }
+
+                                <span class="news-read-more" aria-hidden="true">Läs mer →</span>
+                            </div>
+                        </article>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</section>
