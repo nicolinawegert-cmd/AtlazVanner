@@ -1,0 +1,131 @@
+// NYHETER
+
+// Samma avstånd till menyn som de vanliga innehållssidorna
+.news {
+  padding-bottom: 70px;
+}
+
+.news-intro {
+  max-width: 60ch;
+  margin-bottom: 30px;
+}
+
+.news-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #d2dfca;
+
+  > li {
+    border-bottom: 1px solid #d2dfca;
+  }
+}
+
+.news-preview {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+  padding: 30px 0;
+
+  h2 {
+    margin: 4px 0 8px;
+    font-size: 1.4rem;
+    line-height: 1.3;
+  }
+
+  // Hela raden går att klicka på, men det är bara rubriken som är en länk
+  h2 a {
+    color: inherit;
+    text-decoration: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  &:hover h2 a {
+    text-decoration: underline;
+  }
+
+  p {
+    max-width: 60ch;
+    margin: 0 0 12px;
+  }
+}
+
+.news-preview-image {
+  flex: none;
+  display: block;
+  width: 280px;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.news-preview-content {
+  flex: 1;
+}
+
+.news-date {
+  color: #456a50;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.news-read-more {
+  color: #456a50;
+  font-weight: bold;
+}
+
+// EN NYHET
+
+// Tillbaka-länken står överst, så den behöver lika mycket luft som en rubrik har
+.news-article {
+  padding: 20px 0 70px;
+
+  // Samma vänsterkant som resten av sidan, men inte för långa rader
+  .container > * {
+    max-width: 760px;
+  }
+
+  h1 {
+    margin-bottom: 4px;
+  }
+}
+
+.news-back {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #456a50;
+}
+
+.news-lead {
+  font-size: 1.2rem;
+}
+
+.news-article-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  margin: 30px 0;
+  border-radius: 16px;
+}
+
+// MOBIL
+
+@media (max-width: 768px) {
+  .news-preview {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .news-preview-image {
+    width: 100%;
+  }
+}

@@ -1,0 +1,49 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using System.Globalization
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Extensions
+
+@{
+    Layout = "master.cshtml";
+
+    var swedish = new CultureInfo("sv-SE");
+    var publishDate = Model.Value<DateTime>("publishDate");
+    var date = publishDate != default ? publishDate : Model.CreateDate;
+
+    var summary = Model.Value<string>("summary");
+    var image = Model.Value<MediaWithCrops>("image");
+    var altText = Model.Value<string>("altText");
+}
+
+<article class="news-article">
+    <div class="container">
+        @if (Model.Parent != null)
+        {
+            <a class="news-back" href="@Model.Parent.Url()">← Alla nyheter</a>
+        }
+
+        <h1>@Model.Name</h1>
+
+        <time class="news-date" datetime="@date.ToString("yyyy-MM-dd")">
+            @date.ToString("d MMMM yyyy", swedish)
+        </time>
+
+        @if (!string.IsNullOrWhiteSpace(summary))
+        {
+            <p class="news-lead">@summary</p>
+        }
+
+        @if (image != null)
+        {
+            <img class="news-article-image"
+                 src="@image.GetCropUrl(width: 1200, height: 800, imageCropMode: ImageCropMode.Crop)"
+                 alt="@altText"
+                 width="1200"
+                 height="800" />
+        }
+
+        <div class="news-body">
+            @Model.Value("bodyText")
+        </div>
+    </div>
+</article>
