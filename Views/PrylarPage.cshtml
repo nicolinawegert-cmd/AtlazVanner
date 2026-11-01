@@ -1,0 +1,67 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Extensions
+@using Umbraco.Cms.Core.Models
+
+@{
+    Layout = "master.cshtml";
+
+    var eyebrow    = Model.Value<string>("eyebrow");
+    var introText  = Model.Value<string>("introText");
+    var safetyText = Model.Value<string>("saftetyText"); // stavfelet finns i dokumenttypen
+    var sections   = Model.Children
+        .Where(s => s.ContentType.Alias == "prylSektion");
+}
+
+<section class="prylar">
+    <div class="container">
+        <span class="eyebrow">@eyebrow</span>
+        <h1>@Model.Name</h1>
+        <p class="prylar-intro">@introText</p>
+
+        @foreach (var sektion in sections)
+        {
+            var sectionText = sektion.Value<string>("sectionText");
+            var cards = sektion.Children
+                .Where(c => c.ContentType.Alias == "prylKort");
+
+            <section class="pryl-section">
+                <h2>@sektion.Name</h2>
+
+                @if (!string.IsNullOrWhiteSpace(sectionText))
+                {
+                    <p>@sectionText</p>
+                }
+
+                <div class="prylar-cards">
+                    @foreach (var card in cards)
+                    {
+                        var image       = card.Value<MediaWithCrops>("image");
+                        var altText     = card.Value<string>("altText");
+                        var description = card.Value<string>("description");
+                        var suitableFor = card.Value<string>("suitableFor");
+
+                        <article class="pryl-card">
+                            @if (image != null)
+                            {
+                                <img src="@image.GetCropUrl(width: 400, height: 300, imageCropMode: ImageCropMode.Crop)"
+																		alt="@altText"
+																		width="400"
+																		height="300"
+																		loading="lazy" />
+                            }
+
+                            <h3>@card.Name</h3>
+                            <p>@description</p>
+                            <p class="pryl-card__for">@suitableFor</p>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(safetyText))
+        {
+            <p class="prylar-safety">@safetyText</p>
+        }
+    </div>
+</section>
