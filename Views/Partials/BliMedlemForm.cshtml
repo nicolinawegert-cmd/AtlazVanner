@@ -1,0 +1,48 @@
+@model AtlazVanner.Models.BliMedlemFormModel
+@using AtlazVanner.Controllers
+
+@using (Html.BeginUmbracoForm<BliMedlemController>(nameof(BliMedlemController.Submit), FormMethod.Post, new { @class = "member-form", novalidate = "novalidate" }))
+{
+    <div class="form-row">
+        <div class="form-field">
+            <label asp-for="FirstName"></label>
+            <input asp-for="FirstName" autocomplete="given-name" />
+            <span asp-validation-for="FirstName" class="form-error"></span>
+        </div>
+
+        <div class="form-field">
+            <label asp-for="LastName"></label>
+            <input asp-for="LastName" autocomplete="family-name" />
+            <span asp-validation-for="LastName" class="form-error"></span>
+        </div>
+    </div>
+
+    <div class="form-field">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" type="email" autocomplete="email" />
+        <span asp-validation-for="Email" class="form-error"></span>
+    </div>
+
+    <fieldset class="form-field">
+        <legend>@Html.DisplayNameFor(m => m.MembershipType)</legend>
+
+        <label class="form-choice">
+            <input type="radio" asp-for="MembershipType" value="Enskilt medlemskap" />
+            Enskilt medlemskap
+        </label>
+        <label class="form-choice">
+            <input type="radio" asp-for="MembershipType" value="Familjemedlemskap" />
+            Familjemedlemskap
+        </label>
+
+        <span asp-validation-for="MembershipType" class="form-error"></span>
+    </fieldset>
+
+    <div class="form-field">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" type="tel" autocomplete="tel" />
+        <span asp-validation-for="Phone" class="form-error"></span>
+    </div>
+
+    <button type="submit" class="btn-primary">Skicka anmälan</button>
+}
