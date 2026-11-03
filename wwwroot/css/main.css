@@ -466,10 +466,17 @@ html {
 
 body {
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: #f7f3e9;
   color: #304b34;
   font-family: Arial, sans-serif;
   line-height: 1.6;
+}
+
+main {
+  flex: 1;
 }
 
 .container {
