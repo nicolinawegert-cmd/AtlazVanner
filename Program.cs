@@ -1,9 +1,12 @@
+using AtlazVanner.AskAtlaz;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 #if DEBUG
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 #endif
+
+builder.Services.AddAskAtlaz(builder.Configuration);
 
 builder.CreateUmbracoBuilder()
     .AddBackOffice()
@@ -28,5 +31,7 @@ app.UseUmbraco()
         u.UseBackOfficeEndpoints();
         u.UseWebsiteEndpoints();
     });
+
+app.MapAskAtlaz();
 
 await app.RunAsync();

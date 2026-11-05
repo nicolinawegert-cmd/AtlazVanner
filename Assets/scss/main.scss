@@ -4,6 +4,8 @@
 @use "news";
 @use "prylar";
 @use "member";
+@use "ask-atlaz";
+@use "ask-atlaz-stage";
 
 $primary: #456a50;
 $dark: #304b34;
@@ -123,6 +125,19 @@ main {
 a:focus-visible {
   outline: 3px solid #a56720;
   outline-offset: 4px;
+}
+
+// Syns inte men läses upp av skärmläsare
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 // MOBIL

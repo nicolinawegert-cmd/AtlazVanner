@@ -1,0 +1,281 @@
+// FRÅGA ATLAZ
+
+// Samma avstånd till menyn som de vanliga innehållssidorna
+.ask-atlaz {
+  padding-bottom: 70px;
+}
+
+.ask-atlaz-intro {
+  max-width: 60ch;
+  margin-bottom: 30px;
+}
+
+.ask-atlaz-form {
+  max-width: 640px;
+
+  textarea {
+    display: block;
+    width: 100%;
+    margin: 8px 0 16px;
+    padding: 12px;
+    border: 1px solid #c9d3c4;
+    border-radius: 12px;
+    background: #fffdf8;
+    color: inherit;
+    font: inherit;
+    resize: vertical;
+  }
+
+  textarea:focus-visible {
+    outline: 3px solid #a56720;
+    outline-offset: 2px;
+  }
+}
+
+.ask-atlaz-visitor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
+
+  legend {
+    margin-bottom: 8px;
+    padding: 0;
+    font-weight: bold;
+  }
+}
+
+.ask-atlaz-choice {
+  position: relative;
+  cursor: pointer;
+
+  // Radioknappen syns inte men går fortfarande att använda med tangentbord och skärmläsare
+  input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  > span {
+    display: inline-block;
+    padding: 12px 20px;
+    border: 2px solid #456a50;
+    border-radius: 999px;
+    background: #fffdf8;
+    color: #456a50;
+    font-weight: bold;
+  }
+
+  .ask-atlaz-emoji {
+    margin-right: 6px;
+  }
+
+  input:checked + span {
+    background: #456a50;
+    color: white;
+  }
+
+  input:focus-visible + span {
+    outline: 3px solid #a56720;
+    outline-offset: 3px;
+  }
+}
+
+.ask-atlaz-label {
+  font-weight: bold;
+}
+
+// FÖRSLAG PÅ FRÅGOR
+
+.ask-atlaz-suggestions {
+  margin-bottom: 24px;
+
+  .ask-atlaz-label {
+    margin: 0;
+  }
+}
+
+.ask-atlaz-suggestion-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ask-atlaz-suggestion {
+  padding: 8px 16px;
+  border: 2px solid #d2dfca;
+  border-radius: 999px;
+  background: #fffdf8;
+  color: #304b34;
+  font: inherit;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  // Nya förslag dyker upp ett i taget
+  animation: ask-atlaz-pop-in 0.3s ease-out calc(var(--order, 0) * 80ms) backwards;
+
+  &:hover {
+    border-color: #456a50;
+    background: #e1e8dd;
+  }
+
+  &:focus-visible {
+    outline: 3px solid #a56720;
+    outline-offset: 3px;
+  }
+
+  &[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: wait;
+  }
+}
+
+// Apport är ingen fråga utan en lek, så den ser lite annorlunda ut
+.ask-atlaz-fetch-chip {
+  border-color: #c9a477;
+  background: #fbf1e3;
+  font-weight: bold;
+
+  &:hover {
+    border-color: #8a5a2b;
+    background: #f3e2c9;
+  }
+}
+
+// APPORT
+
+.ask-atlaz-fetch {
+  max-width: 640px;
+  padding: 24px;
+  border: 2px solid #d2dfca;
+  border-radius: 20px;
+  background: #fffdf8;
+
+  h2 {
+    margin-top: 0;
+  }
+}
+
+.ask-atlaz-fetch-count {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.ask-atlaz-fetch-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ask-atlaz-throw {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+
+  &[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: wait;
+  }
+}
+
+.ask-atlaz-stop-fetch {
+  padding: 14px 24px;
+  border: 2px solid #456a50;
+  border-radius: 8px;
+  background: transparent;
+  color: #456a50;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:hover {
+    background: #e1e8dd;
+  }
+}
+
+.ask-atlaz-throw,
+.ask-atlaz-stop-fetch {
+  &:focus-visible {
+    outline: 3px solid #a56720;
+    outline-offset: 3px;
+  }
+}
+
+@keyframes ask-atlaz-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-atlaz-suggestion {
+    animation: none;
+  }
+}
+
+.ask-atlaz-submit {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+}
+
+// Pratbubblan och scenen ligger i _ask-atlaz-stage.scss
+.ask-atlaz-bark {
+  min-height: 1.4em;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1.4;
+  white-space: pre-line;
+
+  // Handlingar inom stjärnor, till exempel *viftar på svansen*
+  em {
+    color: #5b6f5f;
+    font-size: 1.1rem;
+    font-weight: normal;
+  }
+}
+
+.ask-atlaz-translation {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #e1e8dd;
+  font-size: 1.05rem;
+}
+
+// Till exempel länken till kontaktsidan när någon vill träffa Atlaz
+.ask-atlaz-bubble-link {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: #456a50;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+
+  &:hover {
+    background: #304b34;
+  }
+
+  &::after {
+    content: " →";
+  }
+}
+
+.ask-atlaz-privacy {
+  max-width: 60ch;
+  margin-top: 30px;
+  color: #5b6f5f;
+  font-size: 0.85rem;
+}

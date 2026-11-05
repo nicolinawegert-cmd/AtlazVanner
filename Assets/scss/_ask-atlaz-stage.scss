@@ -1,0 +1,540 @@
+// FRÅGA ATLAZ: SCENEN MED ATLAZ OCH PRATBUBBLAN
+
+// Knappar med egen display, som .btn-primary, döljs annars inte av hidden
+.ask-atlaz [hidden] {
+  display: none !important;
+}
+
+// Scenen till vänster och formuläret till höger på stora skärmar
+.ask-atlaz-layout {
+  display: grid;
+  align-items: start;
+  gap: 40px;
+}
+
+@media (min-width: 900px) {
+  .ask-atlaz-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.ask-atlaz-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 480px;
+  padding: 24px 20px 0;
+  overflow: hidden;
+  border-radius: 24px;
+  background: linear-gradient(#dfeadb, #f3f6ee);
+
+  // Gräskullen ligger framför Atlaz, så att bilden slutar mjukt
+  &::after {
+    content: "";
+    position: absolute;
+    right: -15%;
+    bottom: -70px;
+    left: -15%;
+    z-index: 1;
+    height: 130px;
+    border-radius: 50%;
+    background: #a9c79a;
+  }
+}
+
+.ask-atlaz-figure {
+  position: relative;
+  width: min(300px, 75%);
+  margin-bottom: -10px;
+  transform-origin: 50% 100%;
+  // --run-time sätts av atlaz-figur.js när han springer
+  transition:
+    width 0.4s ease,
+    translate var(--run-time, 0s) linear;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transform-origin: 50% 100%;
+    animation: ask-atlaz-breathe 3.6s ease-in-out infinite;
+  }
+}
+
+.ask-atlaz-pose {
+  transform-origin: 40% 90%;
+}
+
+// Pratbubblan ovanför Atlaz
+.ask-atlaz-bubble {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 18px;
+  padding: 18px 22px;
+  border: 2px solid #d2dfca;
+  border-radius: 20px;
+  background: #fffdf8;
+  box-shadow: 0 6px 18px rgba(48, 75, 52, 0.08);
+
+  // Pilen pekar ner mot Atlaz mun
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 34%;
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid #d2dfca;
+    border-bottom: 2px solid #d2dfca;
+    background: #fffdf8;
+    transform: rotate(45deg);
+  }
+}
+
+.ask-atlaz-sound {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 2px solid #456a50;
+  border-radius: 999px;
+  background: #fffdf8;
+  color: #456a50;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+
+  &[aria-pressed="false"] {
+    border-color: #5b6f5f;
+    color: #5b6f5f;
+  }
+
+  &:focus-visible {
+    outline: 3px solid #a56720;
+    outline-offset: 3px;
+  }
+}
+
+// Visar hur Atlaz känner sig, längst ner till vänster på gräset
+.ask-atlaz-mood {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  z-index: 3;
+  margin: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #fffdf8;
+  color: #304b34;
+  font-weight: bold;
+}
+
+// LÄGEN SOM PÅGÅR EN LÄNGRE STUND
+
+.ask-atlaz-stage[data-state="idle"] .ask-atlaz-pose {
+  animation: ask-atlaz-idle 7s ease-in-out infinite;
+}
+
+.ask-atlaz-stage[data-state="thinking"] .ask-atlaz-pose {
+  animation: ask-atlaz-thinking 1.6s ease-in-out infinite;
+}
+
+// Humöret ändrar hur han sitter mellan svaren
+.ask-atlaz-stage[data-state="idle"][data-mood="happy"] .ask-atlaz-pose {
+  animation: ask-atlaz-idle-happy 4s ease-in-out infinite;
+}
+
+.ask-atlaz-stage[data-state="idle"][data-mood="curious"] .ask-atlaz-pose {
+  animation: ask-atlaz-idle 3.5s ease-in-out infinite;
+}
+
+.ask-atlaz-stage[data-state="idle"][data-mood="playful"] .ask-atlaz-pose {
+  animation: ask-atlaz-idle-playful 2.4s ease-in-out infinite;
+}
+
+.ask-atlaz-stage[data-state="idle"][data-mood="tired"] .ask-atlaz-pose {
+  animation: ask-atlaz-idle-tired 8s ease-in-out infinite;
+}
+
+.ask-atlaz-stage[data-state="idle"][data-mood="worried"] .ask-atlaz-pose {
+  animation: ask-atlaz-idle-worried 5s ease-in-out infinite;
+}
+
+// En trött Atlaz andas långsammare
+.ask-atlaz-stage[data-mood="tired"] .ask-atlaz-figure img {
+  animation-duration: 6s;
+}
+
+// APPORT
+
+// Atlaz blir mindre så att han har plats att springa
+.ask-atlaz-stage[data-mode="fetch"] .ask-atlaz-figure {
+  width: min(190px, 48%);
+}
+
+.ask-atlaz-stage[data-mode="fetch"][data-running="true"] .ask-atlaz-pose {
+  animation: ask-atlaz-gallop 0.4s linear infinite;
+}
+
+.ask-atlaz-stick {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  // Större än själva pinnen, så att den är lätt att ta tag i med fingret
+  width: 100px;
+  height: 44px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &[data-busy] {
+    cursor: default;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 2px 2px rgba(48, 75, 52, 0.3));
+  }
+}
+
+.ask-atlaz-stick-hint {
+  position: absolute;
+  z-index: 4;
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #304b34;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: bold;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  animation: ask-atlaz-hint 1.2s ease-in-out infinite;
+}
+
+// Pinnen i munnen. Den ligger i .ask-atlaz-pose så att den följer med när han galopperar.
+.ask-atlaz-carried-stick {
+  position: absolute;
+  top: 57%;
+  left: -6%;
+  width: 56%;
+  rotate: -8deg;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+// Kör apport-knappen på väg upp till scenen. Ligger direkt i body.
+.ask-atlaz-stick-ghost {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid #d2dfca;
+  font-family: Arial, sans-serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+@keyframes ask-atlaz-gallop {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  25% {
+    transform: translateY(-14px) rotate(-4deg);
+  }
+
+  75% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+}
+
+@keyframes ask-atlaz-hint {
+  50% {
+    transform: translate(-50%, calc(-100% - 6px));
+  }
+}
+
+// RÖRELSER SOM SPELAS EN GÅNG
+
+$moves: (
+  hop: 0.3s,
+  jump: 0.6s,
+  tilt: 1.2s,
+  wiggle: 0.9s,
+  shake: 0.5s,
+  roll: 0.9s,
+  sniff: 0.8s,
+  yawn: 1.6s,
+  howl: 1.3s,
+  rumble: 0.7s
+);
+
+@each $move, $time in $moves {
+  .ask-atlaz-figure[data-move="#{$move}"] {
+    animation: ask-atlaz-#{$move} $time ease-in-out;
+  }
+}
+
+.ask-atlaz-figure[data-move="roll"] {
+  transform-origin: 50% 50%;
+}
+
+@keyframes ask-atlaz-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.012, 1.02);
+  }
+}
+
+// Lägger huvudet på sned en kort stund ibland
+@keyframes ask-atlaz-idle {
+  0%,
+  78%,
+  100% {
+    transform: rotate(0);
+  }
+
+  82%,
+  92% {
+    transform: rotate(-5deg);
+  }
+}
+
+// Viftar med hela kroppen ibland, som när svansen går
+@keyframes ask-atlaz-idle-happy {
+  0%,
+  70%,
+  100% {
+    transform: rotate(0);
+  }
+
+  75%,
+  85% {
+    transform: rotate(-3deg);
+  }
+
+  80%,
+  90% {
+    transform: rotate(3deg);
+  }
+}
+
+// Studsar till ibland, redo att leka
+@keyframes ask-atlaz-idle-playful {
+  0%,
+  75%,
+  100% {
+    transform: translateY(0);
+  }
+
+  82% {
+    transform: translateY(-10px);
+  }
+
+  88% {
+    transform: translateY(0) scale(1.02, 0.98);
+  }
+}
+
+// Sjunker ihop lite och låter huvudet hänga
+@keyframes ask-atlaz-idle-tired {
+  0%,
+  100% {
+    transform: translateY(8px) rotate(-2deg);
+  }
+
+  50% {
+    transform: translateY(12px) rotate(-3deg);
+  }
+}
+
+// Kryper ihop och vaggar försiktigt
+@keyframes ask-atlaz-idle-worried {
+  0%,
+  100% {
+    transform: translateY(6px) rotate(-3deg);
+  }
+
+  50% {
+    transform: translateY(6px) rotate(1deg);
+  }
+}
+
+@keyframes ask-atlaz-thinking {
+  0%,
+  100% {
+    transform: rotate(0) translateY(0);
+  }
+
+  25% {
+    transform: rotate(-6deg) translateY(-3px);
+  }
+
+  50% {
+    transform: rotate(-6deg) translateY(2px);
+  }
+
+  75% {
+    transform: rotate(4deg) translateY(-2px);
+  }
+}
+
+@keyframes ask-atlaz-hop {
+  40% {
+    transform: translateY(-14px) scale(1.02, 1.04);
+  }
+
+  75% {
+    transform: translateY(0) scale(1.03, 0.97);
+  }
+}
+
+@keyframes ask-atlaz-jump {
+  15% {
+    transform: translateY(4px) scale(1.04, 0.95);
+  }
+
+  45% {
+    transform: translateY(-48px) scale(0.98, 1.04);
+  }
+
+  75% {
+    transform: translateY(0) scale(1.04, 0.96);
+  }
+}
+
+@keyframes ask-atlaz-tilt {
+  25%,
+  75% {
+    transform: rotate(-8deg);
+  }
+}
+
+@keyframes ask-atlaz-wiggle {
+  15%,
+  45% {
+    transform: rotate(-3deg);
+  }
+
+  30%,
+  60% {
+    transform: rotate(3deg);
+  }
+
+  75% {
+    transform: rotate(-2deg);
+  }
+}
+
+@keyframes ask-atlaz-shake {
+  20%,
+  60% {
+    transform: translateX(-8px) rotate(-2deg);
+  }
+
+  40%,
+  80% {
+    transform: translateX(8px) rotate(2deg);
+  }
+}
+
+@keyframes ask-atlaz-roll {
+  50% {
+    transform: translateY(-40px) rotate(180deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ask-atlaz-sniff {
+  20%,
+  60% {
+    transform: translateY(-4px) scale(1.03);
+  }
+
+  40%,
+  80% {
+    transform: none;
+  }
+}
+
+@keyframes ask-atlaz-yawn {
+  30%,
+  70% {
+    transform: translateY(10px) scaleY(0.96);
+  }
+}
+
+// Sträcker upp huvudet som när man ylar
+@keyframes ask-atlaz-howl {
+  20%,
+  80% {
+    transform: translateY(-6px) rotate(4deg);
+  }
+}
+
+@keyframes ask-atlaz-rumble {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-2px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+// Atlaz står still för den som har bett om mindre rörelse
+@media (prefers-reduced-motion: reduce) {
+  .ask-atlaz-figure,
+  .ask-atlaz-pose,
+  .ask-atlaz-figure img,
+  .ask-atlaz-stick-hint {
+    animation: none !important;
+  }
+
+  .ask-atlaz-figure {
+    transition: none;
+  }
+}
