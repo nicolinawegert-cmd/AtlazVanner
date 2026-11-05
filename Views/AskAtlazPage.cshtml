@@ -1,0 +1,145 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using System.Text.Json
+@using Umbraco.Extensions
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+@inject Microsoft.AspNetCore.Mvc.ViewFeatures.IFileVersionProvider FileVersionProvider
+
+@{
+    Layout = "master.cshtml";
+
+    var introText = Model.Value<string>("introText");
+
+    // Svar om träffar får en länk till kontaktsidan, där föreningens träffar står
+    var contactPage = Model.Root().Children().FirstOrDefault(page => page.ContentType.Alias == "contactPage");
+
+    // Inspelade skall läggs som ljudfiler i wwwroot/audio/atlaz.
+    // Finns det inga där hittar webbläsaren på egna skall.
+    var soundTypes = new[] { ".mp3", ".m4a", ".ogg", ".wav" };
+
+    var barkSounds = WebHostEnvironment.WebRootFileProvider
+        .GetDirectoryContents("audio/atlaz")
+        .Where(file => !file.IsDirectory && soundTypes.Contains(System.IO.Path.GetExtension(file.Name).ToLowerInvariant()))
+        .Select(file => $"/audio/atlaz/{Uri.EscapeDataString(file.Name)}")
+        .ToList();
+
+    // Varje skript får en version i adressen som ändras när filen ändras. Annars kan
+    // webbläsaren blanda gamla sparade skript med den nya sidan, och då går den sönder.
+    var scripts = new[] { "fraga-atlaz", "atlaz-figur", "atlaz-ljud", "atlaz-prat", "atlaz-forslag", "atlaz-apport" }
+        .ToDictionary(
+            name => $"/js/{name}.js",
+            name => FileVersionProvider.AddFileVersionToPath(Context.Request.PathBase, $"/js/{name}.js"));
+}
+
+<section class="ask-atlaz">
+    <div class="container">
+        <h1>@Model.Name</h1>
+
+        @if (!string.IsNullOrWhiteSpace(introText))
+        {
+            <p class="ask-atlaz-intro">@introText</p>
+        }
+
+        <div class="ask-atlaz-layout">
+            <div class="ask-atlaz-stage" data-state="idle" data-bark-sounds="@JsonSerializer.Serialize(barkSounds)">
+                <div class="ask-atlaz-bubble" hidden>
+                    @* Texten skrivs fram bokstav för bokstav, så skärmläsare får hela texten på en gång i stället *@
+                    <p class="ask-atlaz-bark" aria-hidden="true"></p>
+                    <p class="visually-hidden" aria-live="polite"></p>
+
+                    @* Samma svar på svenska, som skrivs fram samtidigt som hundspråket *@
+                    <p class="ask-atlaz-translation" hidden></p>
+
+                    <a class="ask-atlaz-bubble-link" hidden></a>
+                </div>
+
+                <div class="ask-atlaz-figure">
+                    <div class="ask-atlaz-pose">
+                        <img src="/images/atlaz/atlaz-sitter.webp"
+                             alt="Atlaz tittar glatt på dig med tungan ute"
+                             width="640"
+                             height="803" />
+                    </div>
+                </div>
+
+                <p class="ask-atlaz-mood" hidden></p>
+
+                <button class="ask-atlaz-sound" type="button" aria-pressed="true">
+                    <span class="ask-atlaz-sound-icon" aria-hidden="true">🔊</span>
+                    Ljud
+                </button>
+            </div>
+
+            <div class="ask-atlaz-controls">
+                <button class="btn-primary ask-atlaz-start" type="button">Prata med Atlaz</button>
+
+                <form class="ask-atlaz-form" data-page-key="@Model.Key" data-contact-url="@contactPage?.Url()" hidden>
+                    <fieldset class="ask-atlaz-visitor">
+                        <legend>Vem är du?</legend>
+
+                        <label class="ask-atlaz-choice">
+                            <input type="radio" name="visitor" value="human" checked />
+                            <span><span class="ask-atlaz-emoji" aria-hidden="true">🧍</span>Jag är människa</span>
+                        </label>
+
+                        <label class="ask-atlaz-choice">
+                            <input type="radio" name="visitor" value="dog" />
+                            <span><span class="ask-atlaz-emoji" aria-hidden="true">🐕</span>Jag är hund</span>
+                        </label>
+                    </fieldset>
+
+                    <div class="ask-atlaz-suggestions">
+                        <p class="ask-atlaz-label" id="ask-atlaz-suggestions-title">Förslag</p>
+                        <ul class="ask-atlaz-suggestion-list" aria-labelledby="ask-atlaz-suggestions-title">
+                            @* Träff och apport finns alltid kvar, frågorna före dem byts ut efter varje svar *@
+                            <li class="ask-atlaz-suggestion-fixed">
+                                <button class="ask-atlaz-suggestion ask-atlaz-meet-chip" type="button">
+                                    Föreslå en träff <span aria-hidden="true">📅</span>
+                                </button>
+                            </li>
+                            <li class="ask-atlaz-suggestion-fixed">
+                                <button class="ask-atlaz-suggestion ask-atlaz-fetch-chip" type="button">
+                                    Kör apport <span aria-hidden="true">🦴</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <label class="ask-atlaz-label" for="ask-atlaz-question">Eller skriv din egen fråga</label>
+                    <textarea id="ask-atlaz-question"
+                              name="question"
+                              rows="3"
+                              minlength="3"
+                              maxlength="300"
+                              required></textarea>
+
+                    <button class="btn-primary ask-atlaz-submit" type="submit">Fråga Atlaz</button>
+                </form>
+
+                <div class="ask-atlaz-fetch" hidden>
+                    <h2>Apport med Atlaz</h2>
+                    <p>Dra pinnen på scenen och släpp den för att kasta. Atlaz springer och hämtar den.</p>
+                    <p class="ask-atlaz-fetch-count" aria-live="polite">Apporter: 0</p>
+
+                    <div class="ask-atlaz-fetch-buttons">
+                        <button class="btn-primary ask-atlaz-throw" type="button" aria-disabled="true">Kasta pinnen</button>
+                        <button class="ask-atlaz-stop-fetch" type="button">Sluta leka</button>
+                    </div>
+                </div>
+
+                <p class="ask-atlaz-privacy">
+                    Atlaz svar skrivs av AI-tjänsten Google Gemini, så din fråga skickas till Google.
+                    Skriv inga personuppgifter i frågan.
+                </p>
+            </div>
+        </div>
+
+        <noscript>
+            <p>Du behöver ha JavaScript påslaget för att kunna fråga Atlaz.</p>
+        </noscript>
+    </div>
+</section>
+
+@* Import map: när ett skript importerar till exempel ./atlaz-prat.js hämtas versionen med ?v=.
+   Utropstecknet stänger av ASP.NET:s egen hantering av taggen, som annars tar bort type. *@
+<!script type="importmap">@Html.Raw(JsonSerializer.Serialize(new { imports = scripts }))</!script>
+<script type="module" src="@scripts["/js/fraga-atlaz.js"]"></script>
