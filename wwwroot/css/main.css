@@ -152,6 +152,52 @@
   }
 }
 
+.lightbox {
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: visible;
+}
+.lightbox::backdrop {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.lightbox-image {
+  display: block;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.lightbox-close:hover {
+  background: black;
+}
+.lightbox-close:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
+body:has(.lightbox[open]) {
+  overflow: hidden;
+}
+
 .contact {
   padding: 0 0 70px;
 }
