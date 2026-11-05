@@ -2,6 +2,8 @@
 @use "gallery";
 @use "contact";
 @use "news";
+@use "prylar";
+@use "member";
 @use "ask-atlaz";
 @use "ask-atlaz-stage";
 
@@ -20,10 +22,17 @@ html {
 
 body {
   margin: 0;
+  min-height: 100vh;       // minst lika hög som fönstret
+  display: flex;           // lägg header, main och footer i en kolumn
+  flex-direction: column;
   background: $background;
   color: $dark;
   font-family: Arial, sans-serif;
   line-height: 1.6;
+}
+
+main {
+  flex: 1;                 // main tar upp allt ledigt utrymme, så footern trycks ner
 }
 
 .container {

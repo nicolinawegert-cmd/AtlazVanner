@@ -1,0 +1,29 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Extensions
+@using AtlazVanner.Models
+
+@{
+    Layout = "master.cshtml";
+
+    var thanksText = Model.Value<string>("thanksText");
+    var isDone     = TempData["BliMedlemOk"] is true;
+}
+
+<section class="member">
+    <div class="container">
+        <h1>@Model.Name</h1>
+
+	@Model.Value("bodyText")
+
+        @if (isDone)
+        {
+            <p class="member-thanks" role="status">
+                @(string.IsNullOrWhiteSpace(thanksText) ? "Tack för din anmälan!" : thanksText)
+            </p>
+        }
+        else
+        {
+            <partial name="BliMedlemForm" model="new BliMedlemFormModel()" />
+        }
+    </div>
+</section>
