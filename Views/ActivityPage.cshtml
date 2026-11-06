@@ -1,0 +1,20 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using System.Globalization
+@using Umbraco.Extensions
+@{
+    Layout = "master.cshtml";
+    var swedish = new CultureInfo("sv-SE");
+    var activities = Model.ChildrenOfType("activityItem")
+        .Select(item => new { Item = item, Date = item.Value<DateTime>("activityDate") })
+        .Where(activity => activity.Date != default)
+        .OrderBy(activity => activity.Date);
+}
+<section class="activities"><div class="container">
+    <h1>@Model.Name</h1>
+    @if (!string.IsNullOrWhiteSpace(Model.Value<string>("introText"))) { <p class="activities__intro">@Model.Value("introText")</p> }
+    <div class="activities__list">
+    @foreach (var activity in activities) {
+        <article class="activities__item"><time datetime="@activity.Date.ToString("yyyy-MM-dd")">@activity.Date.ToString("d MMMM", swedish)</time><div><h2>@activity.Item.Name</h2><p class="activities__place">@activity.Item.Value("locationAndTime")</p><p>@activity.Item.Value("description")</p></div></article>
+    }
+    </div>
+</div></section>

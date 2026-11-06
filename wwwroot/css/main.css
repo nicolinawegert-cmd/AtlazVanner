@@ -1265,6 +1265,22 @@ main {
   text-decoration: none;
 }
 
+.hero-secondary-link {
+  display: inline-block;
+  margin-left: 18px;
+  color: #456a50;
+  font-weight: 700;
+}
+
+.home-community {
+  max-width: 60ch;
+  margin: -42px auto 50px;
+  padding: 0 20px;
+  color: #456a50;
+  font-weight: 700;
+  text-align: center;
+}
+
 .discover,
 .introduction {
   padding: 70px 0;
@@ -1368,7 +1384,7 @@ main {
 
 .home-activity__card {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto 110px minmax(0, 1fr) auto;
   align-items: center;
   gap: 28px;
   max-width: 900px;
@@ -1376,6 +1392,45 @@ main {
   padding: 28px 34px;
   border-radius: 18px;
   background: #e1e8dd;
+}
+
+.home-activity__image {
+  width: 110px;
+  height: 110px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.activities {
+  padding: 50px 0 70px;
+}
+
+.activities__intro {
+  max-width: 60ch;
+}
+
+.activities__list {
+  display: grid;
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.activities__item {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 24px;
+  padding: 24px;
+  border-radius: 14px;
+  background: #fffdf8;
+}
+
+.activities__item time, .activities__place {
+  color: #456a50;
+  font-weight: 700;
+}
+
+.activities__item h2 {
+  margin: 0;
 }
 
 .home-activity__date {
@@ -1575,6 +1630,18 @@ a:focus-visible {
   .home-activity__card {
     display: flex;
     gap: 18px;
+  }
+  .hero-secondary-link {
+    display: block;
+    margin: 16px 0 0;
+  }
+  .home-activity__image {
+    width: 100%;
+    height: 180px;
+  }
+  .activities__item {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
   .home-member__inner {
     grid-template-columns: 1fr;

@@ -33,6 +33,7 @@
 
     var siteRoot = Model.Root();
     var newsPage = siteRoot?.ChildrenOfType("newsPage").FirstOrDefault();
+    var activityPage = siteRoot?.ChildrenOfType("activityPage").FirstOrDefault();
     var memberPage = siteRoot?.ChildrenOfType("bliMedlemPage").FirstOrDefault();
     var latestNews = newsPage?.ChildrenOfType("newsItem")
         .OrderByDescending(item => item.Value<DateTime>("publishDate") is var date && date != default ? date : item.CreateDate)
@@ -45,7 +46,7 @@
     var nextActivityTitle = Model.Value<string>("nextActivityTitle") ?? "Gemensam höstpromenad";
     var nextActivityDetails = Model.Value<string>("nextActivityDetails") ?? "Skrylle · Samling 10.00";
     var nextActivityDescription = Model.Value<string>("nextActivityDescription") ?? "Följ med Atlaz Vänner på en lugn promenad i naturen, med tid för både hundsnack och fika.";
-    var activityLink = newsPage?.Url() ?? "#";
+    var activityLink = activityPage?.Url() ?? newsPage?.Url() ?? "#";
     
 }
 
@@ -64,6 +65,10 @@
                     ? "Upptäck mer"
                     : buttonText)
             </a>
+            @if (memberPage != null)
+            {
+                <a class="hero-secondary-link" href="@memberPage.Url()">Bli en del av flocken →</a>
+            }
         </div>
 
         @if (heroImage != null)
@@ -91,6 +96,8 @@
         <p>@introText</p>
     </div>
 </section>
+
+<p class="home-community">För hundar och människor som gillar gemenskap, natur och små äventyr.</p>
 
 <section class="discover" id="upptack">
     <div class="container">
@@ -161,6 +168,7 @@
                 <span>@(nextActivityDate?.ToString("dd") ?? "—")</span>
                 <small>@(nextActivityDate?.ToString("MMM", swedish).TrimEnd('.') ?? "")</small>
             </div>
+            <img class="home-activity__image" src="/images/cards/utflykter.jpeg" alt="Promenad i naturen" loading="lazy" />
             <div class="home-activity__content">
                 <p class="home-section-heading__eyebrow">Nästa aktivitet</p>
                 <h2>@nextActivityTitle</h2>
