@@ -1274,6 +1274,72 @@ main {
   background: #fffdf8;
 }
 
+.discover__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 280px));
+  justify-content: center;
+  gap: 20px;
+}
+
+.discover__card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 18px;
+  background: white;
+  color: #304b34;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(48, 75, 52, 0.12);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.discover__card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 32px rgba(48, 75, 52, 0.18);
+}
+
+.discover__image-wrapper {
+  aspect-ratio: 3/2;
+  overflow: hidden;
+  background: #e1e8dd;
+}
+
+.discover__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 260ms ease;
+}
+.discover__card:hover .discover__image {
+  transform: scale(1.04);
+}
+
+.discover__placeholder {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  font-size: 3rem;
+}
+
+.discover__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 24px;
+}
+.discover__content h3 {
+  margin: 0;
+}
+.discover__content p {
+  margin: 10px 0 20px;
+}
+
+.discover__link {
+  margin-top: auto;
+  color: #456a50;
+  font-weight: 700;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1320,6 +1386,9 @@ a:focus-visible {
     grid-template-columns: 1fr;
   }
   .card-grid {
+    grid-template-columns: 1fr;
+  }
+  .discover__grid {
     grid-template-columns: 1fr;
   }
   .hero {

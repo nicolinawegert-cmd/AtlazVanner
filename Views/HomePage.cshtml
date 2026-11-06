@@ -19,6 +19,16 @@
     var featuredPages = 
         Model.Value<IEnumerable<IPublishedContent>>("featuredPages")
         ?? Enumerable.Empty<IPublishedContent>();
+
+    var cardImageDefaults = new Dictionary<Guid, (string Url, string Alt)>
+    {
+        [Guid.Parse("392331f2-3fa9-4eaf-903d-99519dfa25d4")] =
+            ("/images/cards/prylar-leksaker.png", "Schäferhund med leksaker"),
+        [Guid.Parse("469fb175-c5fa-48fb-82cd-beb4f63ec593")] =
+            ("/images/cards/utflykter.jpeg", "Hundpromenad på en träspång i grönskande natur"),
+        [Guid.Parse("f6a6adeb-b464-489f-bcbf-da88ed1df2ca")] =
+            ("/images/cards/nyheter.jpeg", "Valp på gräsmatta")
+    };
     
 }
 
@@ -68,14 +78,18 @@
                     ? item.Value<string>("cardDescription")
                     : null;
 
+                var fallbackImage = cardImageDefaults.GetValueOrDefault(item.Key);
+                var imageUrl = image?.MediaUrl() ?? fallbackImage.Url;
+                var imageAlt = image != null ? item.Name : fallbackImage.Alt;
+
                 <a href="@(item.Url())" class="discover__card">
 
                     <div class="discover__image-wrapper">
-                        @if (image != null)
+                        @if (!string.IsNullOrWhiteSpace(imageUrl))
                         {
                             <img
-                                src="@image.MediaUrl()"
-                                alt=""
+                                src="@imageUrl"
+                                alt="@imageAlt"
                                 class="discover__image"
                                 loading="lazy" />
                         }
