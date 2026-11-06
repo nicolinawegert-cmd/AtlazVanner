@@ -3,6 +3,7 @@
 @using Umbraco.Cms.Core.Models
 @using Umbraco.Cms.Web.Common.PublishedModels
 @using Umbraco.Extensions
+@using System.Globalization
 
 @{
     Layout = "master.cshtml";
@@ -13,12 +14,36 @@
     var heroImageAlt = Model.Value<string>("heroImageAlt");
     var buttonText = Model.Value<string>("heroButtonText");
 
-    var introTitle = Model.Value<string>("introTitle");
-    var introText = Model.Value<string>("introText");
-
     var featuredPages = 
         Model.Value<IEnumerable<IPublishedContent>>("featuredPages")
         ?? Enumerable.Empty<IPublishedContent>();
+
+    var cardImageDefaults = new Dictionary<Guid, (string Url, string Alt)>
+    {
+        [Guid.Parse("392331f2-3fa9-4eaf-903d-99519dfa25d4")] =
+            ("/images/cards/prylar-leksaker.png", "Schäferhund med leksaker"),
+        [Guid.Parse("469fb175-c5fa-48fb-82cd-beb4f63ec593")] =
+            ("/images/cards/utflykter.jpeg", "Hundpromenad på en träspång i grönskande natur"),
+        [Guid.Parse("f6a6adeb-b464-489f-bcbf-da88ed1df2ca")] =
+            ("/images/cards/nyheter.jpeg", "Valp på gräsmatta")
+    };
+
+    var siteRoot = Model.Root();
+    var newsPage = siteRoot?.ChildrenOfType("newsPage").FirstOrDefault();
+    var activityPage = siteRoot?.ChildrenOfType("activityPage").FirstOrDefault();
+    var memberPage = siteRoot?.ChildrenOfType("bliMedlemPage").FirstOrDefault();
+    var latestNews = newsPage?.ChildrenOfType("newsItem")
+        .OrderByDescending(item => item.Value<DateTime>("publishDate") is var date && date != default ? date : item.CreateDate)
+        .Take(3)
+        .ToList()
+        ?? Enumerable.Empty<IPublishedContent>();
+
+    var swedish = new CultureInfo("sv-SE");
+    var nextActivityDate = Model.Value<DateTime?>("nextActivityDate");
+    var nextActivityTitle = Model.Value<string>("nextActivityTitle") ?? "Gemensam höstpromenad";
+    var nextActivityDetails = Model.Value<string>("nextActivityDetails") ?? "Skrylle · Samling 10.00";
+    var nextActivityDescription = Model.Value<string>("nextActivityDescription") ?? "Följ med Atlaz Vänner på en lugn promenad i naturen, med tid för både hundsnack och fika.";
+    var activityLink = activityPage?.Url() ?? newsPage?.Url() ?? "#";
     
 }
 
@@ -37,6 +62,10 @@
                     ? "Upptäck mer"
                     : buttonText)
             </a>
+            @if (memberPage != null)
+            {
+                <a class="hero-secondary-link" href="@memberPage.Url()">Bli en del av flocken →</a>
+            }
         </div>
 
         @if (heroImage != null)
@@ -50,6 +79,13 @@
     </div>
 </section>
 
+<section class="home-values" aria-label="Det här är Atlaz Vänner">
+    <div class="container home-values__inner">
+        <span>Gemenskap</span>
+        <span>Utflykter</span>
+        <span>Hundglädje</span>
+    </div>
+</section>
 
 <section class="discover" id="upptack">
     <div class="container">
@@ -68,14 +104,18 @@
                     ? item.Value<string>("cardDescription")
                     : null;
 
+                var fallbackImage = cardImageDefaults.GetValueOrDefault(item.Key);
+                var imageUrl = image?.MediaUrl() ?? fallbackImage.Url;
+                var imageAlt = image != null ? item.Name : fallbackImage.Alt;
+
                 <a href="@(item.Url())" class="discover__card">
 
                     <div class="discover__image-wrapper">
-                        @if (image != null)
+                        @if (!string.IsNullOrWhiteSpace(imageUrl))
                         {
                             <img
-                                src="@image.MediaUrl()"
-                                alt=""
+                                src="@imageUrl"
+                                alt="@imageAlt"
                                 class="discover__image"
                                 loading="lazy" />
                         }
@@ -109,9 +149,85 @@
     </div>
 </section>
 
-<section class="introduction">
+<section class="home-activity">
     <div class="container">
-        <h2>@introTitle</h2>
-        <p>@introText</p>
+        <div class="home-activity__card">
+            <div class="home-activity__date" aria-label="@(nextActivityDate?.ToString("d MMMM yyyy", swedish))">
+                <span>@(nextActivityDate?.ToString("dd") ?? "—")</span>
+                <small>@(nextActivityDate?.ToString("MMM", swedish).TrimEnd('.') ?? "")</small>
+            </div>
+            <img class="home-activity__image" src="/images/cards/utflykter.jpeg" alt="Promenad i naturen" loading="lazy" />
+            <div class="home-activity__content">
+                <p class="home-section-heading__eyebrow">Nästa aktivitet</p>
+                <h2>@nextActivityTitle</h2>
+                <p>@nextActivityDescription</p>
+                <p class="home-activity__place">@nextActivityDetails</p>
+            </div>
+            <a class="btn-primary" href="@activityLink">Läs mer</a>
+        </div>
     </div>
 </section>
+
+@if (latestNews.Any() && newsPage != null)
+{
+    <section class="home-news">
+        <div class="container">
+            <div class="home-section-heading">
+                <div>
+                    <p class="home-section-heading__eyebrow">Senaste från Atlaz</p>
+                    <h2>Nytt i föreningen</h2>
+                </div>
+                <a href="@newsPage.Url()">Alla nyheter →</a>
+            </div>
+
+            <div class="home-news__grid">
+                @foreach (var news in latestNews)
+                {
+                    var summary = news.Value<string>("summary");
+                    var publishDate = news.Value<DateTime>("publishDate") is var date && date != default ? date : news.CreateDate;
+                    var image = news.Value<MediaWithCrops>("image");
+                    var altText = news.Value<string>("altText");
+
+                    <article class="home-news__item">
+                        @if (image != null)
+                        {
+                            <img class="home-news__image"
+                                 src="@image.GetCropUrl(width: 640, height: 360, imageCropMode: ImageCropMode.Crop)"
+                                 alt="@altText"
+                                 width="640"
+                                 height="360"
+                                 loading="lazy" />
+                        }
+                        <time datetime="@publishDate.ToString("yyyy-MM-dd")">
+                            @publishDate.ToString("d MMMM yyyy", swedish)
+                        </time>
+                        <h3><a href="@news.Url()">@news.Name</a></h3>
+                        @if (!string.IsNullOrWhiteSpace(summary))
+                        {
+                            <p>@summary</p>
+                        }
+                        <a class="home-news__link" href="@news.Url()">Läs mer <span aria-hidden="true">→</span></a>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@if (memberPage != null)
+{
+    <section class="home-member">
+        <div class="container home-member__inner">
+            <div>
+                <p class="home-member__eyebrow">Bli en del av flocken</p>
+                <h2>Följ med på nästa äventyr</h2>
+                <p>Hos Atlaz Vänner finns plats för hundar, människor och alla små stunder däremellan.</p>
+            </div>
+            <img class="home-member__image"
+                 src="/images/cards/bli-medlem.jpeg"
+                 alt="Atlaz tittar glatt in i kameran"
+                 loading="lazy" />
+            <a class="btn-primary" href="@memberPage.Url()">Bli medlem</a>
+        </div>
+    </section>
+}
