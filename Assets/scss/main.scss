@@ -97,6 +97,22 @@ main {
   background: $light;
 }
 
+.home-values {
+  background: $dark;
+  color: white;
+}
+
+.home-values__inner {
+  display: flex;
+  justify-content: center;
+  gap: clamp(24px, 7vw, 100px);
+  padding: 18px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .discover__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 280px));
@@ -167,6 +183,103 @@ main {
   font-weight: 700;
 }
 
+.home-news {
+  padding: 70px 0;
+  background: $background;
+}
+
+.home-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+
+  h2 {
+    margin: 0;
+  }
+
+  > a {
+    color: $primary;
+    font-weight: 700;
+  }
+}
+
+.home-section-heading__eyebrow,
+.home-member__eyebrow {
+  margin: 0 0 4px;
+  color: $primary;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-news__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.home-news__item {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  padding: 26px;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 5px 16px rgba(48, 75, 52, 0.08);
+
+  time {
+    color: $primary;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  h3 {
+    margin: 10px 0;
+    font-size: 1.25rem;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+
+  p {
+    margin: 0 0 18px;
+  }
+}
+
+.home-news__link {
+  margin-top: auto;
+  color: $primary;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.home-member {
+  padding: 70px 0;
+  background: #e1e8dd;
+}
+
+.home-member__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  max-width: 900px;
+
+  h2 {
+    margin: 0;
+  }
+
+  p:last-child {
+    max-width: 58ch;
+    margin-bottom: 0;
+  }
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -222,6 +335,22 @@ a:focus-visible {
   }
 
   .discover__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-values__inner,
+  .home-member__inner,
+  .home-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .home-values__inner {
+    gap: 8px;
+    text-align: center;
+  }
+
+  .home-news__grid {
     grid-template-columns: 1fr;
   }
 
