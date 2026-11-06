@@ -14,9 +14,6 @@
     var heroImageAlt = Model.Value<string>("heroImageAlt");
     var buttonText = Model.Value<string>("heroButtonText");
 
-    var introTitle = Model.Value<string>("introTitle");
-    var introText = Model.Value<string>("introText");
-
     var featuredPages = 
         Model.Value<IEnumerable<IPublishedContent>>("featuredPages")
         ?? Enumerable.Empty<IPublishedContent>();
@@ -89,15 +86,6 @@
         <span>Hundglädje</span>
     </div>
 </section>
-
-<section class="introduction">
-    <div class="container">
-        <h2>@introTitle</h2>
-        <p>@introText</p>
-    </div>
-</section>
-
-<p class="home-community">För hundar och människor som gillar gemenskap, natur och små äventyr.</p>
 
 <section class="discover" id="upptack">
     <div class="container">

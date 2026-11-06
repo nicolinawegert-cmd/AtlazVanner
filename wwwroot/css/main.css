@@ -1272,15 +1272,6 @@ main {
   font-weight: 700;
 }
 
-.home-community {
-  max-width: 60ch;
-  margin: -42px auto 50px;
-  padding: 0 20px;
-  color: #456a50;
-  font-weight: 700;
-  text-align: center;
-}
-
 .discover,
 .introduction {
   padding: 70px 0;
