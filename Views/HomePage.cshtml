@@ -41,6 +41,11 @@
         ?? Enumerable.Empty<IPublishedContent>();
 
     var swedish = new CultureInfo("sv-SE");
+    var nextActivityDate = Model.Value<DateTime?>("nextActivityDate");
+    var nextActivityTitle = Model.Value<string>("nextActivityTitle") ?? "Gemensam höstpromenad";
+    var nextActivityDetails = Model.Value<string>("nextActivityDetails") ?? "Skrylle · Samling 10.00";
+    var nextActivityDescription = Model.Value<string>("nextActivityDescription") ?? "Följ med Atlaz Vänner på en lugn promenad i naturen, med tid för både hundsnack och fika.";
+    var activityLink = newsPage?.Url() ?? "#";
     
 }
 
@@ -145,17 +150,17 @@
 <section class="home-activity">
     <div class="container">
         <div class="home-activity__card">
-            <div class="home-activity__date" aria-label="14 november 2026">
-                <span>14</span>
-                <small>nov</small>
+            <div class="home-activity__date" aria-label="@(nextActivityDate?.ToString("d MMMM yyyy", swedish))">
+                <span>@(nextActivityDate?.ToString("dd") ?? "—")</span>
+                <small>@(nextActivityDate?.ToString("MMM", swedish).TrimEnd('.') ?? "")</small>
             </div>
             <div class="home-activity__content">
                 <p class="home-section-heading__eyebrow">Nästa aktivitet</p>
-                <h2>Gemensam höstpromenad</h2>
-                <p>Följ med Atlaz Vänner på en lugn promenad i naturen, med tid för både hundsnack och fika.</p>
-                <p class="home-activity__place">Skrylle · Samling 10.00</p>
+                <h2>@nextActivityTitle</h2>
+                <p>@nextActivityDescription</p>
+                <p class="home-activity__place">@nextActivityDetails</p>
             </div>
-            <a class="btn-primary" href="/nyheter/">Läs mer</a>
+            <a class="btn-primary" href="@activityLink">Läs mer</a>
         </div>
     </div>
 </section>
