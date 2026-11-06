@@ -177,8 +177,19 @@
                 {
                     var summary = news.Value<string>("summary");
                     var publishDate = news.Value<DateTime>("publishDate") is var date && date != default ? date : news.CreateDate;
+                    var image = news.Value<MediaWithCrops>("image");
+                    var altText = news.Value<string>("altText");
 
                     <article class="home-news__item">
+                        @if (image != null)
+                        {
+                            <img class="home-news__image"
+                                 src="@image.GetCropUrl(width: 640, height: 360, imageCropMode: ImageCropMode.Crop)"
+                                 alt="@altText"
+                                 width="640"
+                                 height="360"
+                                 loading="lazy" />
+                        }
                         <time datetime="@publishDate.ToString("yyyy-MM-dd")">
                             @publishDate.ToString("d MMMM yyyy", swedish)
                         </time>
