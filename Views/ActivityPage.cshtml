@@ -1,20 +1,23 @@
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 @using System.Globalization
 @using Umbraco.Extensions
 @{
     Layout = "master.cshtml";
     var swedish = new CultureInfo("sv-SE");
-    var activities = Model.ChildrenOfType("activityItem")
+    var allActivities = Model.ChildrenOfType("activityItem")
         .Select(item => new { Item = item, Date = item.Value<DateTime>("activityDate") })
-        .Where(activity => activity.Date != default)
-        .OrderBy(activity => activity.Date);
+        .Where(activity => activity.Date != default);
+    var upcomingActivities = allActivities.Where(activity => activity.Date >= DateTime.Today).OrderBy(activity => activity.Date);
+    var previousActivities = allActivities.Where(activity => activity.Date < DateTime.Today).OrderByDescending(activity => activity.Date);
 }
 <section class="activities"><div class="container">
     <h1>@Model.Name</h1>
     @if (!string.IsNullOrWhiteSpace(Model.Value<string>("introText"))) { <p class="activities__intro">@Model.Value("introText")</p> }
+    @if (upcomingActivities.Any()) { <h2 class="activities__heading">Kommande aktiviteter</h2> }
     <div class="activities__list">
-    @foreach (var activity in activities) {
+    @foreach (var activity in upcomingActivities) {
         <article class="activities__item"><time datetime="@activity.Date.ToString("yyyy-MM-dd")">@activity.Date.ToString("d MMMM", swedish)</time><div><h2>@activity.Item.Name</h2><p class="activities__place">@activity.Item.Value("locationAndTime")</p><p>@activity.Item.Value("description")</p></div></article>
     }
     </div>
+    @if (previousActivities.Any()) { <h2 class="activities__heading activities__heading--previous">Tidigare aktiviteter</h2><div class="activities__list">@foreach (var activity in previousActivities) { <article class="activities__item activities__item--previous"><time datetime="@activity.Date.ToString("yyyy-MM-dd")">@activity.Date.ToString("d MMMM", swedish)</time><div><h2>@activity.Item.Name</h2><p class="activities__place">@activity.Item.Value("locationAndTime")</p><p>@activity.Item.Value("description")</p></div></article> }</div> }
 </div></section>
