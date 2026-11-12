@@ -1,6 +1,8 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 @using System.Globalization
 @using Umbraco.Extensions
+@using AtlazVanner.AskAtlaz
+@inject Umbraco.Cms.Core.Services.IContentService ContentService
 @{
     Layout = "master.cshtml";
     var swedish = new CultureInfo("sv-SE");
@@ -9,6 +11,8 @@
         .Where(activity => activity.Date != default);
     var upcomingActivities = allActivities.Where(activity => activity.Date >= DateTime.Today).OrderBy(activity => activity.Date);
     var previousActivities = allActivities.Where(activity => activity.Date < DateTime.Today).OrderByDescending(activity => activity.Date);
+    // Bokade via Fråga Atlaz men inte publicerade än. De flyttar upp till de vanliga när en admin publicerar dem.
+    var pendingActivities = ActivityBooking.Pending(ContentService, Model.Id);
 }
 <section class="activities"><div class="container">
     <h1>@Model.Name</h1>
@@ -19,5 +23,7 @@
         <article class="activities__item"><time datetime="@activity.Date.ToString("yyyy-MM-dd")">@activity.Date.ToString("d MMMM", swedish)</time><div><h2>@activity.Item.Name</h2><p class="activities__place">@activity.Item.Value("locationAndTime")</p><p>@activity.Item.Value("description")</p></div></article>
     }
     </div>
+    @* Ihopfällt från början, så att förfrågningarna inte tar plats från de riktiga aktiviteterna *@
+    @if (pendingActivities.Any()) { <details class="activities__pending"><summary><h2 class="activities__heading activities__heading--pending">Väntar på godkännande (@pendingActivities.Count)</h2></summary><p class="activities__pending-intro">Förfrågningar från Fråga Atlaz. De blir vanliga aktiviteter när föreningen har godkänt dem.</p><div class="activities__list">@foreach (var activity in pendingActivities) { <article class="activities__item activities__item--pending"><time datetime="@activity.Date.ToString("yyyy-MM-dd")">@activity.Date.ToString("d MMMM", swedish)</time><div><h2>@activity.Name</h2><p class="activities__place">@activity.LocationAndTime</p><p class="activities__badge">Väntar på godkännande</p></div></article> }</div></details> }
     @if (previousActivities.Any()) { <h2 class="activities__heading activities__heading--previous">Tidigare aktiviteter</h2><div class="activities__list">@foreach (var activity in previousActivities) { <article class="activities__item activities__item--previous"><time datetime="@activity.Date.ToString("yyyy-MM-dd")">@activity.Date.ToString("d MMMM", swedish)</time><div><h2>@activity.Item.Name</h2><p class="activities__place">@activity.Item.Value("locationAndTime")</p><p>@activity.Item.Value("description")</p></div></article> }</div> }
 </div></section>

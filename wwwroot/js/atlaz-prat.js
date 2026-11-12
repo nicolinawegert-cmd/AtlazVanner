@@ -77,6 +77,8 @@ export function createSpeechBubble(bubble, figure, sounds) {
     const announcer = bubble.querySelector("[aria-live]");
     const translation = bubble.querySelector(".ask-atlaz-translation");
     const link = bubble.querySelector(".ask-atlaz-bubble-link");
+    const actions = bubble.querySelector(".ask-atlaz-bubble-actions");
+    const status = bubble.querySelector(".ask-atlaz-bubble-status");
 
     // Räknas upp vid varje nytt svar, så att ett äldre svar slutar skrivas fram
     let current = 0;
@@ -88,6 +90,32 @@ export function createSpeechBubble(bubble, figure, sounds) {
         translation.replaceChildren();
         translation.hidden = true;
         link.hidden = true;
+        actions.replaceChildren();
+        actions.hidden = true;
+        status.hidden = true;
+    }
+
+    // En kort bekräftelse överst i bubblan, till exempel "Förfrågan skickad"
+    function showStatus(text) {
+        if (text) {
+            status.textContent = text;
+            status.hidden = false;
+        }
+    }
+
+    // Knappar under svaret, till exempel ja och nej när Atlaz frågar om han ska boka.
+    // Varje knapp är { text, primary, onClick }.
+    function showActions(buttons) {
+        for (const { text, primary, onClick } of buttons) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = primary ? "btn-primary" : "ask-atlaz-bubble-secondary";
+            button.textContent = text;
+            button.addEventListener("click", onClick, { once: true });
+            actions.append(button);
+        }
+
+        actions.hidden = false;
     }
 
     async function type(element, text, isCurrent, delay = CHARACTER_DELAY) {
@@ -112,16 +140,19 @@ export function createSpeechBubble(bubble, figure, sounds) {
         }
     }
 
-    // Visas medan Atlaz väntar på svaret från AI:n
-    function think(text) {
+    // Visas medan Atlaz väntar på något, till exempel svaret från AI:n.
+    // state är läget han står i under tiden, announcement det skärmläsare får höra
+    // och badge en bekräftelse överst i bubblan.
+    function think(text, { state = "thinking", announcement = "Atlaz nosar på din fråga.", badge = null } = {}) {
         clear(current + 1);
+        showStatus(badge);
 
         const action = document.createElement("em");
         action.textContent = text;
         bark.append(action);
 
-        announcer.textContent = "Atlaz nosar på din fråga.";
-        figure.setState("thinking");
+        announcer.textContent = announcement;
+        figure.setState(state);
     }
 
     // Hundspråket skrivs fram bit för bit, och varje skall och handling hörs och syns
@@ -170,7 +201,8 @@ export function createSpeechBubble(bubble, figure, sounds) {
     }
 
     // answer har samma form som svaret från /api/fraga-atlaz: { bark, translation, mood }.
-    // Med answer.link, { href, text }, visas en länk under svaret.
+    // Med answer.link, { href, text }, visas en länk under svaret, med answer.actions knappar
+    // och med answer.status en bekräftelse överst.
     // Hundspråket och svenskan skrivs fram samtidigt, lite i taget.
     // Svarar sant om Atlaz hann prata klart och falskt om ett nyare svar tog över.
     async function say(answer) {
@@ -178,6 +210,7 @@ export function createSpeechBubble(bubble, figure, sounds) {
         const isCurrent = () => id === current;
 
         clear(id);
+        showStatus(answer.status);
         translation.hidden = !answer.translation;
 
         // Skärmläsare får hela svaret på en gång i stället för en bokstav i taget
@@ -199,6 +232,10 @@ export function createSpeechBubble(bubble, figure, sounds) {
             link.href = answer.link.href;
             link.textContent = answer.link.text;
             link.hidden = false;
+        }
+
+        if (answer.actions?.length > 0) {
+            showActions(answer.actions);
         }
 
         figure.setState("idle");

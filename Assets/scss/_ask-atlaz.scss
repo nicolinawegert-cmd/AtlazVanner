@@ -133,6 +133,24 @@
   }
 }
 
+// "Föreslå en träff" ser vald ut medan bokningen pågår, och krysset visar att den kan avbrytas
+.ask-atlaz-meet-chip[aria-pressed="true"] {
+  border-color: #456a50;
+  background: #456a50;
+  color: white;
+
+  &::after {
+    content: "✕";
+    margin-left: 8px;
+    font-weight: bold;
+  }
+
+  &:hover {
+    border-color: #304b34;
+    background: #304b34;
+  }
+}
+
 // Apport är ingen fråga utan en lek, så den ser lite annorlunda ut
 .ask-atlaz-fetch-chip {
   border-color: #c9a477;
@@ -252,7 +270,61 @@
   font-size: 1.05rem;
 }
 
-// Till exempel länken till kontaktsidan när någon vill träffa Atlaz
+// Bekräftelsen överst i bubblan när en förfrågan har skickats
+.ask-atlaz-bubble-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #456a50;
+  color: white;
+  font-weight: bold;
+  animation: ask-atlaz-pop-in 0.35s ease-out;
+
+  &::before {
+    content: "✓";
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    color: #456a50;
+    font-size: 0.85rem;
+  }
+}
+
+// Ja och nej när Atlaz frågar om han ska lägga in en aktivitet
+.ask-atlaz-bubble-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ask-atlaz-bubble-secondary {
+  padding: 10px 18px;
+  border: 2px solid #456a50;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #456a50;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:hover {
+    background: #e1e8dd;
+  }
+
+  &:focus-visible {
+    outline: 3px solid #a56720;
+    outline-offset: 3px;
+  }
+}
+
+// Till exempel länken till aktivitetssidan när Atlaz har lagt in en aktivitet
 .ask-atlaz-bubble-link {
   display: inline-block;
   margin-top: 12px;

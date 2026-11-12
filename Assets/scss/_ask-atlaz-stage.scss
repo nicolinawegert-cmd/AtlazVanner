@@ -295,7 +295,8 @@ $moves: (
   sniff: 0.8s,
   yawn: 1.6s,
   howl: 1.3s,
-  rumble: 0.7s
+  rumble: 0.7s,
+  joy: 1.8s
 );
 
 @each $move, $time in $moves {
@@ -433,6 +434,32 @@ $moves: (
 
   75% {
     transform: translateY(0) scale(1.04, 0.96);
+  }
+}
+
+// Hoppar av glädje tre gånger, med en liten sväng åt varsitt håll
+@keyframes ask-atlaz-joy {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  8%,
+  40%,
+  72% {
+    transform: translateY(4px) scale(1.04, 0.95);
+  }
+
+  22% {
+    transform: translateY(-56px) rotate(-6deg) scale(0.98, 1.04);
+  }
+
+  54% {
+    transform: translateY(-64px) rotate(6deg) scale(0.98, 1.04);
+  }
+
+  86% {
+    transform: translateY(-40px) rotate(-3deg) scale(0.99, 1.02);
   }
 }
 
