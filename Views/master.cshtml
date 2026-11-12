@@ -6,8 +6,6 @@
 
     var root = Model.Root();
     var menuPages = root.Children;
-    var activityPage = menuPages.FirstOrDefault(page => page.ContentType.Alias == "activityPage");
-    var excursionsPage = menuPages.FirstOrDefault(page => page.Name == "Utflykter");
 
     var metaTitle = Model.Value<string>("metaTitle");
     var metaDescription = Model.Value<string>("metaDescription");
@@ -59,27 +57,10 @@
                 <ul class="nav-list">
                     @foreach (var menuPage in menuPages)
                     {
-                        @if (excursionsPage != null && menuPage.Id == excursionsPage.Id)
-                        {
-                            continue;
-                        }
-
-                        var isActivitiesMenu = activityPage != null && menuPage.Id == activityPage.Id;
-                        var isCurrent = Model.Id == menuPage.Id || (isActivitiesMenu && excursionsPage != null && Model.Id == excursionsPage.Id);
-
-                        <li class="@(isActivitiesMenu ? "nav-item--has-submenu" : null)">
-                            <a href="@menuPage.Url()" aria-current="@(isCurrent ? "page" : null)">
+                        <li>
+                            <a href="@menuPage.Url()" aria-current="@(Model.Id == menuPage.Id ? "page" : null)">
                                 @menuPage.Name
                             </a>
-
-                            @if (isActivitiesMenu && excursionsPage != null)
-                            {
-                                <ul class="nav-submenu">
-                                    <li>
-                                        <a href="@excursionsPage.Url()" aria-current="@(Model.Id == excursionsPage.Id ? "page" : null)">Utflykter</a>
-                                    </li>
-                                </ul>
-                            }
                         </li>
                     }
 
