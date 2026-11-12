@@ -8,7 +8,6 @@
     var email = Model.Value<string>("email");
     var phone = Model.Value<string>("phone");
     var postalAddress = Model.Value<string>("postalAddress");
-    var meetups = Model.Value<string>("meetups");
 
     // En tel-länk får bara innehålla siffror och plustecken
     var phoneLink = new string((phone ?? "").Where(c => char.IsDigit(c) || c == '+').ToArray());
@@ -48,13 +47,6 @@
                 </div>
             }
 
-            @if (!string.IsNullOrWhiteSpace(meetups))
-            {
-                <div class="contact-card">
-                    <h2>Träffa oss</h2>
-                    <p class="contact-lines">@meetups</p>
-                </div>
-            }
         </div>
     </div>
 </section>
