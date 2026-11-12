@@ -16,4 +16,7 @@ public class AskAtlazOptions
 
     // Skyddar gratiskvoten hos Google mot att en enda besökare använder upp den
     public int QuestionsPerHour { get; set; } = 20;
+
+    // Hur många aktiviteter en besökare kan boka in via Atlaz på en timme
+    public int BookingsPerHour { get; set; } = 3;
 }

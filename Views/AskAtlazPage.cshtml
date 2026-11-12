@@ -9,9 +9,6 @@
 
     var introText = Model.Value<string>("introText");
 
-    // Svar om träffar får en länk till kontaktsidan, där föreningens träffar står
-    var contactPage = Model.Root().Children().FirstOrDefault(page => page.ContentType.Alias == "contactPage");
-
     // Inspelade skall läggs som ljudfiler i wwwroot/audio/atlaz.
     // Finns det inga där hittar webbläsaren på egna skall.
     var soundTypes = new[] { ".mp3", ".m4a", ".ogg", ".wav" };
@@ -42,6 +39,9 @@
         <div class="ask-atlaz-layout">
             <div class="ask-atlaz-stage" data-state="idle" data-bark-sounds="@JsonSerializer.Serialize(barkSounds)">
                 <div class="ask-atlaz-bubble" hidden>
+                    @* Till exempel "Förfrågan skickad" när Atlaz har skickat en bokning *@
+                    <p class="ask-atlaz-bubble-status" hidden></p>
+
                     @* Texten skrivs fram bokstav för bokstav, så skärmläsare får hela texten på en gång i stället *@
                     <p class="ask-atlaz-bark" aria-hidden="true"></p>
                     <p class="visually-hidden" aria-live="polite"></p>
@@ -50,6 +50,9 @@
                     <p class="ask-atlaz-translation" hidden></p>
 
                     <a class="ask-atlaz-bubble-link" hidden></a>
+
+                    @* Till exempel ja och nej när Atlaz frågar om han ska lägga in en aktivitet *@
+                    <div class="ask-atlaz-bubble-actions" hidden></div>
                 </div>
 
                 <div class="ask-atlaz-figure">
@@ -72,7 +75,7 @@
             <div class="ask-atlaz-controls">
                 <button class="btn-primary ask-atlaz-start" type="button">Prata med Atlaz</button>
 
-                <form class="ask-atlaz-form" data-page-key="@Model.Key" data-contact-url="@contactPage?.Url()" hidden>
+                <form class="ask-atlaz-form" data-page-key="@Model.Key" hidden>
                     <fieldset class="ask-atlaz-visitor">
                         <legend>Vem är du?</legend>
 
@@ -90,9 +93,10 @@
                     <div class="ask-atlaz-suggestions">
                         <p class="ask-atlaz-label" id="ask-atlaz-suggestions-title">Förslag</p>
                         <ul class="ask-atlaz-suggestion-list" aria-labelledby="ask-atlaz-suggestions-title">
-                            @* Träff och apport finns alltid kvar, frågorna före dem byts ut efter varje svar *@
+                            @* Träff och apport finns alltid kvar, frågorna före dem byts ut efter varje svar.
+                               Träffen bokas in med Atlaz direkt i chatten. *@
                             <li class="ask-atlaz-suggestion-fixed">
-                                <button class="ask-atlaz-suggestion ask-atlaz-meet-chip" type="button">
+                                <button class="ask-atlaz-suggestion ask-atlaz-meet-chip" type="button" aria-pressed="false">
                                     Föreslå en träff <span aria-hidden="true">📅</span>
                                 </button>
                             </li>

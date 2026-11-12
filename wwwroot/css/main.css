@@ -628,6 +628,21 @@ body:has(.lightbox[open]) {
   cursor: wait;
 }
 
+.ask-atlaz-meet-chip[aria-pressed=true] {
+  border-color: #456a50;
+  background: #456a50;
+  color: white;
+}
+.ask-atlaz-meet-chip[aria-pressed=true]::after {
+  content: "✕";
+  margin-left: 8px;
+  font-weight: bold;
+}
+.ask-atlaz-meet-chip[aria-pressed=true]:hover {
+  border-color: #304b34;
+  background: #304b34;
+}
+
 .ask-atlaz-fetch-chip {
   border-color: #c9a477;
   background: #fbf1e3;
@@ -730,6 +745,55 @@ body:has(.lightbox[open]) {
   padding-top: 12px;
   border-top: 1px solid #e1e8dd;
   font-size: 1.05rem;
+}
+
+.ask-atlaz-bubble-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #456a50;
+  color: white;
+  font-weight: bold;
+  animation: ask-atlaz-pop-in 0.35s ease-out;
+}
+.ask-atlaz-bubble-status::before {
+  content: "✓";
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  color: #456a50;
+  font-size: 0.85rem;
+}
+
+.ask-atlaz-bubble-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ask-atlaz-bubble-secondary {
+  padding: 10px 18px;
+  border: 2px solid #456a50;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #456a50;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+.ask-atlaz-bubble-secondary:hover {
+  background: #e1e8dd;
+}
+.ask-atlaz-bubble-secondary:focus-visible {
+  outline: 3px solid #a56720;
+  outline-offset: 3px;
 }
 
 .ask-atlaz-bubble-link {
@@ -1044,6 +1108,10 @@ body:has(.lightbox[open]) {
   animation: ask-atlaz-rumble 0.7s ease-in-out;
 }
 
+.ask-atlaz-figure[data-move=joy] {
+  animation: ask-atlaz-joy 1.8s ease-in-out;
+}
+
 .ask-atlaz-figure[data-move=roll] {
   transform-origin: 50% 50%;
 }
@@ -1133,6 +1201,23 @@ body:has(.lightbox[open]) {
   }
   75% {
     transform: translateY(0) scale(1.04, 0.96);
+  }
+}
+@keyframes ask-atlaz-joy {
+  0%, 100% {
+    transform: none;
+  }
+  8%, 40%, 72% {
+    transform: translateY(4px) scale(1.04, 0.95);
+  }
+  22% {
+    transform: translateY(-56px) rotate(-6deg) scale(0.98, 1.04);
+  }
+  54% {
+    transform: translateY(-64px) rotate(6deg) scale(0.98, 1.04);
+  }
+  86% {
+    transform: translateY(-40px) rotate(-3deg) scale(0.99, 1.02);
   }
 }
 @keyframes ask-atlaz-tilt {
@@ -1455,6 +1540,57 @@ main {
 
 .activities__item h2 {
   margin: 0;
+}
+
+.activities__pending {
+  margin-top: 60px;
+}
+.activities__pending summary {
+  list-style: none;
+  cursor: pointer;
+}
+.activities__pending summary::-webkit-details-marker {
+  display: none;
+}
+.activities__pending summary:focus-visible {
+  outline: 3px solid #a56720;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+.activities__pending .activities__heading--pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+.activities__pending .activities__heading--pending::after {
+  content: "▾";
+  font-size: 0.9em;
+  transition: rotate 0.2s ease;
+}
+.activities__pending:not([open]) .activities__heading--pending::after {
+  rotate: -90deg;
+}
+
+.activities__pending-intro {
+  max-width: 60ch;
+  margin: 20px 0 0;
+}
+
+.activities__item--pending {
+  border: 2px dashed #c9a477;
+  background: #fbf1e3;
+}
+
+.activities__badge {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: #8a5518;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 .home-activity__date {

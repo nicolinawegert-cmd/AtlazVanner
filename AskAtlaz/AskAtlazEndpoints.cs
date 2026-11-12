@@ -5,7 +5,13 @@ using Umbraco.Extensions;
 
 namespace AtlazVanner.AskAtlaz;
 
-public record AskAtlazRequest(string? Question, string? Visitor, Guid? PageKey);
+// History är samtalet hittills och Booking det Atlaz har fyllt i om en bokning, båda från webbläsaren
+public record AskAtlazRequest(
+    string? Question,
+    string? Visitor,
+    Guid? PageKey,
+    IReadOnlyList<ChatTurn>? History = null,
+    BookingDraft? Booking = null);
 
 public static class AskAtlazEndpoints
 {
@@ -17,6 +23,7 @@ public static class AskAtlazEndpoints
         services.Configure<AskAtlazOptions>(configuration.GetSection(AskAtlazOptions.Section));
         services.AddHttpClient<AskAtlazService>(client => client.Timeout = TimeSpan.FromSeconds(25));
         services.AddSingleton<QuestionLimiter>();
+        services.AddSingleton<BookingLimiter>();
 
         return services;
     }
@@ -24,6 +31,7 @@ public static class AskAtlazEndpoints
     public static IEndpointRouteBuilder MapAskAtlaz(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/api/fraga-atlaz", AskAsync);
+        endpoints.MapPost("/api/fraga-atlaz/boka", ActivityBooking.Book);
 
         return endpoints;
     }
@@ -52,7 +60,7 @@ public static class AskAtlazEndpoints
         }
 
         var facts = ReadFacts(umbracoContextFactory, request.PageKey);
-        var answer = await service.AskAsync(question, visitor, facts, cancellationToken);
+        var answer = await service.AskAsync(question, visitor, facts, request.History, request.Booking, cancellationToken);
 
         return Results.Ok(answer);
     }
@@ -85,15 +93,17 @@ public static class AskAtlazEndpoints
     }
 }
 
-// Räknar frågor per besökare den senaste timmen
-public class QuestionLimiter(IOptionsMonitor<AskAtlazOptions> options)
+// Räknar hur många gånger varje besökare har gjort något den senaste timmen
+public abstract class HourlyLimiter
 {
-    private readonly ConcurrentDictionary<string, Queue<DateTime>> _questions = new();
+    private readonly ConcurrentDictionary<string, Queue<DateTime>> _times = new();
+
+    protected abstract int Limit { get; }
 
     public bool TryTake(string visitorId)
     {
         var now = DateTime.UtcNow;
-        var times = _questions.GetOrAdd(visitorId, _ => new Queue<DateTime>());
+        var times = _times.GetOrAdd(visitorId, _ => new Queue<DateTime>());
 
         lock (times)
         {
@@ -102,7 +112,7 @@ public class QuestionLimiter(IOptionsMonitor<AskAtlazOptions> options)
                 times.Dequeue();
             }
 
-            if (times.Count >= options.CurrentValue.QuestionsPerHour)
+            if (times.Count >= Limit)
             {
                 return false;
             }
@@ -111,4 +121,14 @@ public class QuestionLimiter(IOptionsMonitor<AskAtlazOptions> options)
             return true;
         }
     }
+}
+
+public class QuestionLimiter(IOptionsMonitor<AskAtlazOptions> options) : HourlyLimiter
+{
+    protected override int Limit => options.CurrentValue.QuestionsPerHour;
+}
+
+public class BookingLimiter(IOptionsMonitor<AskAtlazOptions> options) : HourlyLimiter
+{
+    protected override int Limit => options.CurrentValue.BookingsPerHour;
 }

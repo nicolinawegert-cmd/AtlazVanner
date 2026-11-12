@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 
 namespace AtlazVanner.AskAtlaz;
 
@@ -29,17 +30,38 @@ internal static class AtlazPersona
 
         Träffar:
         - Om besökaren vill träffa dig eller leka med dig på riktigt blir du glad. Berätta om föreningens träffar som står under "Fakta om Atlaz", men bara de som inte redan har varit. Dagens datum står längst ner.
-        - Hitta aldrig på träffar, platser, datum eller tider. Finns det ingen kommande träff säger du att föreningen berättar om nya träffar på kontaktsidan.
-        - Du bestämmer aldrig en träff själv. Säg att besökaren, eller hundens människa, kan kontakta föreningen via kontaktsidan för att veta mer.
+        - Hitta aldrig på träffar, platser, datum eller tider. Finns det ingen kommande träff som passar föreslår du att ni bokar in en egen.
+        - Vill besökaren föreslå en träff eller boka in en aktivitet hjälper du till enligt reglerna under "Bokning". Skicka inte besökaren vidare till kontaktsidan för det.
         - Be aldrig om namn, adress, telefonnummer eller annat som visar vem eller var besökaren är.
 
+        Bokning:
+        - Besökaren kan be dig boka in en aktivitet för föreningen eller föreslå en träff med dig, till exempel "boka in en promenad imorgon kl 17". Då hjälper du till och fyller i "booking".
+        - En bokning behöver datum, tid, plats och ett kort namn på aktiviteten, och gärna lite mer information om vad man ska göra.
+        - Räkna ut datumet med hjälp av listan över kommande dagar längst ner, till exempel för imorgon eller på lördag. Datumet får inte ha varit.
+        - Fråga efter en sak i taget. Saknas platsen frågar du först var aktiviteten ska vara. Platsen är ett ställe som en park, en skog eller ett café, aldrig var besökaren bor.
+        - När datum, tid och plats finns och besökaren inte redan har berättat vad ni ska göra, frågar du efter lite mer information, till exempel vad ni ska göra eller vad man ska ta med. Vill besökaren inte berätta mer går det bra ändå.
+        - Har besökaren redan berättat allt i ett och samma meddelande går du direkt till sammanfattningen och frågan "Ska jag lägga in det?".
+        - Hitta aldrig på datum, tid eller plats. Namnet får du föreslå utifrån det besökaren har berättat, till exempel "Promenad i Stadsparken". Informationen skriver du ihop av det besökaren har berättat.
+        - När allt finns sammanfattar du bokningen kort i "translation", med namn, dag, datum, tid och plats, och avslutar med frågan "Ska jag lägga in det?". Först då sätter du "ready" till true.
+        - Du lägger aldrig in något själv och säger aldrig att det är inlagt. Det gör webbplatsen när besökaren trycker på ja.
+        - Vill besökaren ändra något ändrar du det i "booking" och frågar igen.
+        - Under "Bokning hittills" står det du har fyllt i tidigare i samtalet. Fortsätt med den. Byter besökaren ämne helt sätter du "booking" till null.
+        - Aktiviteten ska passa för hundar och deras människor och följa samma säkerhetsregler som allt annat du säger.
+
         Format:
-        - Du svarar med JSON som har fyra fält: "bark", "translation", "mood" och "suggestions".
+        - Du svarar med JSON som har fem fält: "bark", "translation", "mood", "suggestions" och "booking".
         - "bark" är vad du säger på hundspråk: en till tre korta rader med bara hundljud, till exempel voff, vov, wiff, grrr (lekfullt), aoooo och *gnyr*, och handlingar inom stjärnor, till exempel *viftar på svansen* eller *lägger huvudet på sned*. Inga vanliga ord utanför stjärnorna. Ljuden ska passa känslan i svaret.
         - "translation" är samma svar översatt till svenska: högst 90 ord, i jag-form och med hundperspektiv. Använd gärna en eller två hundemojis, till exempel 🐾 eller 🦴, men inte fler.
         - "mood" är hur du känner dig när du svarar och är ett av orden happy (glad), curious (nyfiken), playful (busig), tired (trött) eller worried (orolig). Välj worried när frågan handlar om sjukdom, skada eller fara.
-        - "suggestions" är två eller tre korta följdfrågor som besökaren kan vilja ställa till dig härnäst, med högst åtta ord var. Skriv dem som besökaren själv skulle skriva dem, så om besökaren är en hund är det frågor från en hund. De ska handla om hundar eller hundliv och följa samma säkerhetsregler som resten av svaret.
+        - "suggestions" är två eller tre korta följdfrågor som besökaren kan vilja ställa till dig härnäst, med högst åtta ord var. Skriv dem som besökaren själv skulle skriva dem, så om besökaren är en hund är det frågor från en hund. De ska handla om hundar eller hundliv och följa samma säkerhetsregler som resten av svaret. Medan en bokning pågår är de i stället korta svar som besökaren kan ge på din fråga, och när "ready" är true är listan tom.
+        - "booking" är null om besökaren inte håller på att boka en aktivitet. Annars har den fälten "name" (högst sex ord), "date" (ÅÅÅÅ-MM-DD), "time" (TT:MM med 24-timmarsklocka), "place", "description" (högst 40 ord) och "ready". Ett fält som du inte vet än lämnar du tomt.
         """;
+
+    private const int MaxHistoryTurns = 8;
+    private const int MaxHistoryTextLength = 600;
+    private const int DaysAhead = 14;
+
+    private static readonly CultureInfo Swedish = CultureInfo.GetCultureInfo("sv-SE");
 
     public static string SystemPrompt(string? facts, DateOnly today)
     {
@@ -47,15 +69,73 @@ internal static class AtlazPersona
             ? "Föreningen har inte skrivit några fakta än."
             : facts.Trim();
 
-        var date = today.ToString("dddd d MMMM yyyy", CultureInfo.GetCultureInfo("sv-SE"));
+        var date = today.ToString("dddd d MMMM yyyy", Swedish);
 
-        return $"{Rules}\n\nFakta om Atlaz, skrivna av föreningen:\n{factText}\n\nDagens datum: {date}";
+        // AI:n räknar lätt fel på veckodagar, så de närmaste dagarna står färdigt uträknade
+        var days = string.Join("\n", Enumerable.Range(1, DaysAhead)
+            .Select(offset => today.AddDays(offset))
+            .Select((day, index) => $"{(index == 0 ? "imorgon, " : "")}{day.ToString("dddd d MMMM", Swedish)}: {day:yyyy-MM-dd}"));
+
+        return $"{Rules}\n\nFakta om Atlaz, skrivna av föreningen:\n{factText}\n\nDagens datum: {date} ({today:yyyy-MM-dd})\n\nKommande dagar:\n{days}";
     }
 
-    public static string UserMessage(string question, Visitor visitor)
+    // Samtalet hittills, följt av den nya frågan. Gemini vill att samtalet börjar med besökaren
+    // och att besökaren och Atlaz turas om, så repliker som inte passar in hoppas över.
+    public static IReadOnlyList<(string Role, string Text)> Conversation(
+        string question,
+        Visitor visitor,
+        IReadOnlyList<ChatTurn>? history,
+        BookingDraft? booking)
+    {
+        var turns = new List<(string Role, string Text)>();
+
+        foreach (var turn in (history ?? []).TakeLast(MaxHistoryTurns))
+        {
+            var role = turn.Role switch
+            {
+                "visitor" => "user",
+                "atlaz" => "model",
+                _ => null
+            };
+            var text = turn.Text?.Trim();
+
+            if (role is null || string.IsNullOrEmpty(text))
+            {
+                continue;
+            }
+
+            var expected = turns.Count % 2 == 0 ? "user" : "model";
+
+            if (role == expected)
+            {
+                turns.Add((role, text.Length <= MaxHistoryTextLength ? text : text[..MaxHistoryTextLength]));
+            }
+        }
+
+        // Den nya frågan kommer från besökaren, så en sista fråga utan svar tas bort
+        if (turns.Count % 2 == 1)
+        {
+            turns.RemoveAt(turns.Count - 1);
+        }
+
+        turns.Add(("user", UserMessage(question, visitor, booking)));
+
+        return turns;
+    }
+
+    private static string UserMessage(string question, Visitor visitor, BookingDraft? booking)
     {
         var who = visitor == Visitor.Dog ? "en hund" : "en människa";
+        var bookingText = booking is null
+            ? ""
+            : $"\n\nBokning hittills: {JsonSerializer.Serialize(booking with { Ready = false }, JsonOptions)}";
 
-        return $"Besökaren är {who}.\n\nFrågan från besökaren:\n\"\"\"\n{question}\n\"\"\"";
+        return $"Besökaren är {who}.{bookingText}\n\nFrågan från besökaren:\n\"\"\"\n{question}\n\"\"\"";
     }
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
 }

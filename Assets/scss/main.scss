@@ -235,6 +235,55 @@ main {
 .activities__item time, .activities__place { color: $primary; font-weight: 700; }
 .activities__item h2 { margin: 0; }
 
+// Aktiviteter som har bokats via Fråga Atlaz men inte är godkända än. De ligger ihopfällda,
+// och rubriken med pilen öppnar dem.
+.activities__pending {
+  margin-top: 60px;
+
+  summary {
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker { display: none; }
+
+    &:focus-visible {
+      outline: 3px solid #a56720;
+      outline-offset: 4px;
+      border-radius: 6px;
+    }
+  }
+
+  .activities__heading--pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+
+    &::after {
+      content: "▾";
+      font-size: 0.9em;
+      transition: rotate 0.2s ease;
+    }
+  }
+
+  &:not([open]) .activities__heading--pending::after { rotate: -90deg; }
+}
+.activities__pending-intro { max-width: 60ch; margin: 20px 0 0; }
+.activities__item--pending {
+  border: 2px dashed #c9a477;
+  background: #fbf1e3;
+}
+.activities__badge {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: #8a5518;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
 .home-activity__date {
   display: flex;
   min-width: 82px;

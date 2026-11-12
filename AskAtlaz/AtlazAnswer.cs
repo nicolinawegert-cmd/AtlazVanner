@@ -13,7 +13,17 @@ public record AtlazAnswer(string Bark, string Translation, bool Fallback = false
     public string Mood { get; init; } = Moods.Happy;
 
     public IReadOnlyList<string> Suggestions { get; init; } = [];
+
+    // Det Atlaz har fyllt i medan han hjälper besökaren att boka en aktivitet, annars null
+    public BookingDraft? Booking { get; init; }
 }
+
+// En aktivitet som Atlaz håller på att boka in. Date skrivs 2026-11-13 och Time 17:00.
+// Ready blir sant när allt som behövs finns och Atlaz har frågat om han ska lägga in den.
+public record BookingDraft(string? Name, string? Date, string? Time, string? Place, string? Description, bool Ready = false);
+
+// En tidigare replik i samtalet. Role är "visitor" eller "atlaz".
+public record ChatTurn(string? Role, string? Text);
 
 // Hur Atlaz kan känna sig. Samma ord används i JavaScript och CSS.
 public static class Moods
