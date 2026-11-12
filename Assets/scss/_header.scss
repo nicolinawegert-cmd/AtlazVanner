@@ -64,32 +64,6 @@
   }
 }
 
-.nav-item--has-submenu {
-  position: relative;
-}
-
-.nav-submenu {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: -14px;
-  z-index: 10;
-  display: none;
-  min-width: 150px;
-  margin: 0;
-  padding: 8px 14px;
-  border-radius: 10px;
-  background: white;
-  box-shadow: 0 8px 20px rgba(48, 75, 52, 0.16);
-  list-style: none;
-
-  a { white-space: nowrap; }
-}
-
-.nav-item--has-submenu:hover .nav-submenu,
-.nav-item--has-submenu:focus-within .nav-submenu {
-  display: block;
-}
-
 .nav-toggle {
   display: none;
   background: transparent;
@@ -142,15 +116,5 @@
     a {
       padding: 15px 8px;
     }
-  }
-
-  .nav-submenu {
-    position: static;
-    display: block;
-    margin: 0 0 8px 14px;
-    padding: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
   }
 }
