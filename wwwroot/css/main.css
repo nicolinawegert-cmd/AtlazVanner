@@ -145,7 +145,7 @@
   }
 }
 .gallery {
-  padding: 70px 0;
+  padding-bottom: 70px;
 }
 
 .gallery-intro {
@@ -236,7 +236,7 @@ body:has(.lightbox[open]) {
 }
 
 .contact {
-  padding: 0 0 70px;
+  padding-bottom: 70px;
 }
 
 .contact-intro {
@@ -348,7 +348,7 @@ body:has(.lightbox[open]) {
 }
 
 .news-article {
-  padding: 20px 0 70px;
+  padding-bottom: 70px;
 }
 .news-article .container > * {
   max-width: 760px;
@@ -387,7 +387,15 @@ body:has(.lightbox[open]) {
   }
 }
 .prylar {
-  padding: 40px 0 70px;
+  padding-bottom: 70px;
+}
+
+.prylar h1 {
+  margin-bottom: 4px;
+}
+
+.prylar .eyebrow {
+  margin-top: 0;
 }
 
 .prylar-intro {
@@ -448,7 +456,7 @@ body:has(.lightbox[open]) {
   }
 }
 .member {
-  padding: 40px 0 70px;
+  padding-bottom: 70px;
 }
 
 .member-form {
@@ -1260,6 +1268,18 @@ main {
   margin: 0 auto;
 }
 
+.content-page,
+.activities,
+.gallery,
+.contact,
+.news,
+.news-article,
+.prylar,
+.member,
+.ask-atlaz {
+  padding-top: 40px;
+}
+
 .hero {
   padding: 90px 0;
 }
@@ -1429,7 +1449,7 @@ main {
 }
 
 .activities {
-  padding: 50px 0 70px;
+  padding-bottom: 70px;
 }
 
 .activities__intro {

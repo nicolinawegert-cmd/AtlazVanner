@@ -1,5 +1,14 @@
 .prylar {
-  padding: 40px 0 70px;
+  padding-bottom: 70px;
+}
+
+// Etiketten står under rubriken, så att rubriken hamnar på samma höjd som på de andra sidorna
+.prylar h1 {
+  margin-bottom: 4px;
+}
+
+.prylar .eyebrow {
+  margin-top: 0;
 }
 
 .prylar-intro {
