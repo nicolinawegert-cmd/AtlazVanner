@@ -1,6 +1,5 @@
 // NYHETER
 
-// Samma avstånd till menyn som de vanliga innehållssidorna
 .news {
   padding-bottom: 70px;
 }
@@ -83,9 +82,8 @@
 
 // EN NYHET
 
-// Tillbaka-länken står överst, så den behöver lika mycket luft som en rubrik har
 .news-article {
-  padding: 20px 0 70px;
+  padding-bottom: 70px;
 
   // Samma vänsterkant som resten av sidan, men inte för långa rader
   .container > * {
